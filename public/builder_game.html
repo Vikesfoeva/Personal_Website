@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Play Builder's Game</title>
+        <style media="screen">
+            body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
+            #message { background: white; max-width: 360px; margin: 100px auto 16px; padding: 32px 24px; border-radius: 3px; }
+            #message h2 { color: #ffa100; font-weight: bold; font-size: 16px; margin: 0 0 8px; }
+            #message h1 { font-size: 22px; font-weight: 300; color: rgba(0,0,0,0.6); margin: 0 0 16px;}
+            #message p { line-height: 140%; margin: 16px 0 24px; font-size: 14px; }
+            #message a { display: block; text-align: center; background: #039be5; text-transform: uppercase; text-decoration: none; color: white; padding: 16px; border-radius: 4px; }
+            #message, #message a { box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); }
+            #load { color: rgba(0,0,0,0.4); text-align: center; font-size: 13px; }
+            @media (max-width: 600px) {
+              body, #message { margin-top: 0; background: white; box-shadow: none; }
+              body { border-top: 16px solid #ffa100; }
+            }
+          </style>
+    </head>
+    <body>
+        <div>
+            <h1>Instructions</h1>
+            <p>
+                The game is played on 5x5 board.  Each square on the board has a height that starts at 0, but cannot ever exceed 4.  One player is 'x' and the other is 'o'.  Player x will place their two builders first, and then player two will
+                place both of theirs.  No two builders may occupy the space at the same time.  If any builder occupies a square, that square cannot be built on.
+                <br>
+                <br>
+                A turn consists of:
+                <ol>
+                    <li>A player choosing a builder to move</li>
+                    <li>Moving that builder to an adjacent square, diagonally or orthognally (up/down or left/right).  Note that a builder can move
+                        upwards only 1 level in height but can move downwards any amount.  So a builder would be unable to move from a square of height 1 to a square
+                        of height 3 even if they were adjacent.  Moving from a square of height 2 to 0 is valid though.
+                    </li>
+                    <li>Then building on a square adjacent to the square that builder moved to (diagonally or orthognally).  Note you are allowed to build on the square
+                        that was just vacated.  A sqaure cannot exceed a height of 4.
+                    </li>
+                    <li>Successful completion of all of the above steps constitutes a valid move.</li>
+                </ol>
+                <br>
+                <br>
+                A player wins when:
+                <ol>
+                    <li>One of a players builders are on a square of height 3 or: </li>
+                    <li>At the completion of a players turn, their opponent has no valid moves.  For example, if 'x' has just moved and on their turn 'o'
+                        would have no valid moves, then 'x' wins.
+                    </li>
+                </ol>
+            </p>
+        </div>
+    </body>
+    <footer>
+
+    </footer>
+</html>
