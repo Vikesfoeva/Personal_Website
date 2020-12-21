@@ -42,3 +42,17 @@ border: 2px solid black;
     background-color: #75b8f7;
     border: 2px solid black;
 }
+
+.height {
+    float: right;
+    right: 0px;
+    padding: 10px;
+    overflow: auto;
+}
+
+.piece{
+    float: left;
+    left: 0px;
+    padding: 5px;
+    overflow: auto;
+}

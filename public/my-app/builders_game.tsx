@@ -1,32 +1,34 @@
 // Author: Brandon Lenz
 // Adapted from final project in CS 161 with permision from Professor Tim Alcon
 
-function squareClick(x_coord: number, y_coord: number){
-    const div: any = document.getElementById(String(x_coord).concat(String(y_coord)));
+function squareClick(row_pick: number, column_pick: number){
+    const div: any = document.getElementById(`piece_`.concat(String(row_pick),String(column_pick)));
     if (game.turnPhase == 0) {
-        game.initialPlacement(x_coord, y_coord, div);
+        game.initialPlacement(row_pick, column_pick, div);
     } else if (game.turnPhase == 1) {
-        if (game.clickMove(x_coord, y_coord)) {
+        if (game.clickMove(row_pick, column_pick)) {
             if (game.x_turn) {
                 document.getElementById('step').innerHTML = step[3];
             } else {
                 document.getElementById('step').innerHTML = step[6];
             }
             clearError()
-            from_x = x_coord;
-            from_y = y_coord;
+            from_row = row_pick;
+            from_column = column_pick;
             game.turnPhase += 1;
         } else {
             document.getElementById('error').innerHTML = `Please choose a builder`;
         };
     } else if (game.turnPhase == 2) {
-        if (game.moveBuilder(x_coord, y_coord)) {
-            const divFrom: any = document.getElementById(String(from_x).concat(String(from_y)));
-            const divTo: any = document.getElementById(String(x_coord).concat(String(y_coord)));
+        if (game.moveBuilder(row_pick, column_pick)) {
+            let divFrom: any = document.getElementById(`piece_`.concat(String(from_row), String(from_column)));
+            let divTo: any = document.getElementById(`piece_`.concat(String(row_pick), String(column_pick)));
+            console.log(divFrom.innerHTML);
+            console.log(divTo.innerHTML);
             divTo.innerHTML = divFrom.innerHTML;
             divFrom.innerHTML = ``;
-            to_x = x_coord;
-            to_y = y_coord;
+            to_row = row_pick;
+            to_column = column_pick;
             game.turnPhase += 1;
 
             if (game.x_turn) {
@@ -36,26 +38,26 @@ function squareClick(x_coord: number, y_coord: number){
             }
             clearError()
             if (game.x_turn) {
-                if (from_x == game.x_b1.row && from_y == game.x_b1.column) {
-                    game.x_b1.row = to_x;
-                    game.x_b1.column = to_y;
-                    game.x_b1.height = game.board[to_x][to_y];
-                } else if(from_x == game.x_b2.row && from_y == game.x_b2.column) {
-                    game.x_b2.row = to_x;
-                    game.x_b2.column = to_y;
-                    game.x_b2.height = game.board[to_x][to_y];
+                if (from_row == game.x_b1.row && from_column == game.x_b1.column) {
+                    game.x_b1.row = to_row;
+                    game.x_b1.column = to_column;
+                    game.x_b1.height = game.board[to_row][to_column];
+                } else if(from_row == game.x_b2.row && from_column == game.x_b2.column) {
+                    game.x_b2.row = to_row;
+                    game.x_b2.column = to_column;
+                    game.x_b2.height = game.board[to_row][to_column];
                 } else {
                     console.log(`Something went wrong`);
                 }
             } else if(!game.x_turn) {
-                if (from_x == game.o_b1.row && from_y == game.o_b1.column) {
-                    game.o_b1.row = to_x;
-                    game.o_b1.column = to_y;
-                    game.o_b1.height = game.board[to_x][to_y];
-                } else if(from_x == game.o_b2.row && from_y == game.o_b2.column) {
-                    game.o_b2.row = to_x;
-                    game.o_b2.column = to_y;
-                    game.o_b2.height = game.board[to_x][to_y];
+                if (from_row == game.o_b1.row && from_column == game.o_b1.column) {
+                    game.o_b1.row = to_row;
+                    game.o_b1.column = to_column;
+                    game.o_b1.height = game.board[to_row][to_column];
+                } else if(from_row == game.o_b2.row && from_column == game.o_b2.column) {
+                    game.o_b2.row = to_row;
+                    game.o_b2.column = to_column;
+                    game.o_b2.height = game.board[to_row][to_column];
                 } else {
                     console.log(`Something went wrong`);
                 }
@@ -67,7 +69,7 @@ function squareClick(x_coord: number, y_coord: number){
             document.getElementById('error').innerHTML = `Please select a valid space to move to`;
         }
     } else if (game.turnPhase == 3) {
-        if (game.buildSquare(x_coord, y_coord)) {
+        if (game.buildSquare(row_pick, column_pick)) {
             game.changeTurn();
             game.turnPhase = 1;
             if (game.x_turn) {
@@ -241,20 +243,19 @@ class GameBoard {
 
     moveBuilder(row: number, col: number) {
         if (game.isOccupied(row, col)) {
-            printFalse(`Someone is already there!`);
-            document.getElementById(`error`).innerHTML = `Someone is already there!`;
+            printError(`Somone is already there!`);
             return false;
         }
         
-        if ((this.board[row][col] - this.board[from_x][from_y]) > 1){
+        if ((this.board[row][col] - this.board[from_row][from_column]) > 1){
             printFalse(`Can't jump that high!`);
-            document.getElementById(`error`).innerHTML = `Can't jump that high!`;
+            printError(`You can't jump that high!`);
             return false;
         }
 
-        if (!this.isAdjacent(row, col, from_x, from_y)){
+        if (!this.isAdjacent(row, col, from_row, from_column)){
             printFalse(`You need to move to an adjacent square`);
-            document.getElementById(`error`).innerHTML = `That's not adjacent`;
+            printError(`That is not adjacent!`)
             return false;
         }
         return true;
@@ -383,9 +384,9 @@ const step = [
     `Black Won`,
     `White Won`
 ];
-let from_x: number;
-let from_y: number;
-let to_x: number;
-let to_y: number;
-let build_x: number;
-let build_y: number;
+let from_row: number;
+let from_column: number;
+let to_row: number;
+let to_column: number;
+let build_row: number;
+let build_column: number;
