@@ -4,10 +4,10 @@
 
 function squareClick(x_coord: number, y_coord: number){
     const div: any = document.getElementById(String(x_coord).concat(String(y_coord)));
-    
+    console.log(typeof(div));
     if (game.turnPhase == 0) {
         game.initialPlacement(x_coord, y_coord, div);
-    } else {
+    } else if (game.turnPhase == 1) {
         // play rest of game
     }
 
@@ -52,12 +52,12 @@ class GameBoard {
                 this.x_b1.row = row;
                 this.x_b1.column = col;
                 this.x_b1.height = 0;
-                div.innerHTML += `<img src="./game_files/blackPawn.png" height="50px" />`;
+                div.innerHTML += <img src=".\my-app\images\blackPawn.png" />;
             } else{
                 this.x_b2.row = row;
                 this.x_b2.column = col;
                 this.x_b2.height = 0;
-                div.innerHTML += `<img src="./game_files/blackPawn.png" height="50px" />`;
+                div.innerHTML += `<img src="./public/images/blackPawn.png" height="50px" />`;
                 this.changeTurn();
             }
         } else if (!this.x_turn) {
@@ -65,14 +65,14 @@ class GameBoard {
                 this.o_b1.row = row;
                 this.o_b1.column = col;
                 this.o_b1.height = 0;
-                div.innerHTML += `<img src="./game_files/whitePawn.png" height="50px" />`;
+                div.innerHTML += `<img src="./public/images/whitePawn.png" height="50px" />`;
             } else{
                 this.o_b2.row = row;
                 this.o_b2.column = col;
                 this.o_b2.height = 0;
                 this.changeTurn();
                 this.turnPhase += 1;
-                div.innerHTML += `<img src="./game_files/whitePawn.png" height="50px" />`;
+                div.innerHTML += `<img src="./public/images/whitePawn.png" height="50px" />`;
             }
         } else {
             printFalse(`Inital Placement`);

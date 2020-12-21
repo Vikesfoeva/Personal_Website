@@ -1,4 +1,3 @@
-"use strict";
 // Author: Brandon Lenz
 // Adapted from final project in CS 161 with permision from Professor Tim Alcon
 function squareClick(x_coord, y_coord) {
@@ -6,7 +5,7 @@ function squareClick(x_coord, y_coord) {
     if (game.turnPhase == 0) {
         game.initialPlacement(x_coord, y_coord, div);
     }
-    else {
+    else if (game.turnPhase == 1) {
         // play rest of game
     }
 }
@@ -36,13 +35,13 @@ var GameBoard = /** @class */ (function () {
                 this.x_b1.row = row;
                 this.x_b1.column = col;
                 this.x_b1.height = 0;
-                div.innerHTML += "<img src=\"./game_files/blackPawn.png\" height=\"50px\" />";
+                div.innerHTML += "<img src=\"./game_files/images/blackPawn.png\" height=\"50px\" />";
             }
             else {
                 this.x_b2.row = row;
                 this.x_b2.column = col;
                 this.x_b2.height = 0;
-                div.innerHTML += "<img src=\"./game_files/blackPawn.png\" height=\"50px\" />";
+                div.innerHTML += "<img src=\"./game_files/images/blackPawn.png\" height=\"50px\" />";
                 this.changeTurn();
             }
         }
