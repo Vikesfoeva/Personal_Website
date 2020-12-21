@@ -1,0 +1,24 @@
+/* 
+https://medium.com/@gwhi94/creating-a-gameboard-with-css-grid-47da8ac25078 
+*/
+
+div{
+    padding: 20px;
+}
+
+.game-board{ 
+    display: grid;
+    grid-template-columns: 120px 120px 120px 120px 120px;
+    grid-template-rows: 120px 120px 120px 120px 120px 20px;
+    justify-content: center;
+}
+
+.boxA {
+background-color: #f77575;
+border: 2px solid black;
+}
+
+.boxB {
+    background-color: #75b8f7;
+    border: 2px solid black;
+}
