@@ -3,8 +3,14 @@
 
 
 function squareClick(x_coord: number, y_coord: number){
-    console.log(`The x coordinate is ${x_coord} and the y coordinate is ${y_coord}.`);
-    console.log(document.getElementById(String(x_coord).concat(String(y_coord))));
+    const div: any = document.getElementById(String(x_coord).concat(String(y_coord)));
+    
+    if (game.turnPhase == 0) {
+        game.initialPlacement(x_coord, y_coord, div);
+    } else {
+        // play rest of game
+    }
+
 }
 
 function printFalse(input: String){
@@ -14,8 +20,9 @@ function printFalse(input: String){
 class GameBoard {
 
     board: number[][];
-    state: String;
+    state: String;   // Used to describe whether the game is still ongoing or not
     x_turn: Boolean;
+    turnPhase: number; // 0 == Placement phase, 1 == choose builder to move, 2 == choose destiantion, 3 == choose build square 
     x_b1: Builder;
     x_b2: Builder;
     o_b1: Builder;
@@ -26,51 +33,47 @@ class GameBoard {
         this.board = [[0, 0, 0, 0, 0],[0, 0, 0, 0, 0],[0, 0, 0, 0, 0],[0, 0, 0, 0, 0],[0, 0, 0, 0, 0]];
         this.state = `In Progress`;
         this.x_turn = true;
+        this.turnPhase = 0;
         this.x_b1 = new Builder();
         this.x_b2 = new Builder();
         this.o_b1 = new Builder();
         this.o_b2 = new Builder();
     }
 
-    initialPlacement(row_b1: number, col_b1: number, row_b2: number, col_b2: number, player: String) {
-
-        if (!this.onBoard(row_b1, col_b1)){
-            printFalse(`Not on Board`);
-            return false;
-        }
-
-        if (!this.onBoard(row_b2, col_b2)){
-            printFalse(`Not on Board`);
-            return false;
-        }
-
-        if (row_b1 == row_b2 && col_b1 == col_b2){
-            printFalse(`Builders on the same spot!`);
-            return false;
-        }
-
-        if (this.isOccupied(row_b1, col_b1)){
+    initialPlacement(row: number, col: number, div: any) {
+        // , row_b2: number, col_b2: number, player: String
+        if (this.isOccupied(row, col)){
             printFalse(`That space is occupied`);
             return false;
         }
 
-        if (this.isOccupied(row_b2, col_b2)){
-            printFalse(`That space is occupied`);
-            return false;
-        }
-        console.log(player);
-        if (this.x_turn && player === 'x') {
-            this.x_b1.row = row_b1;
-            this.x_b1.column = col_b1;
-            this.x_b2.row = row_b2;
-            this.x_b2.column = col_b2;
-            this.changeTurn();
-        } else if (!this.x_turn && player === 'o') {
-            this.o_b1.row = row_b1;
-            this.o_b1.column = col_b1;
-            this.o_b2.row = row_b2;
-            this.o_b2.column = col_b2;
-            this.changeTurn();
+        if (this.x_turn) {
+            if (this.x_b1.height == 99) {
+                this.x_b1.row = row;
+                this.x_b1.column = col;
+                this.x_b1.height = 0;
+                div.innerHTML += `<img src="./game_files/blackPawn.png" height="50px" />`;
+            } else{
+                this.x_b2.row = row;
+                this.x_b2.column = col;
+                this.x_b2.height = 0;
+                div.innerHTML += `<img src="./game_files/blackPawn.png" height="50px" />`;
+                this.changeTurn();
+            }
+        } else if (!this.x_turn) {
+            if (this.o_b1.height == 99) {
+                this.o_b1.row = row;
+                this.o_b1.column = col;
+                this.o_b1.height = 0;
+                div.innerHTML += `<img src="./game_files/whitePawn.png" height="50px" />`;
+            } else{
+                this.o_b2.row = row;
+                this.o_b2.column = col;
+                this.o_b2.height = 0;
+                this.changeTurn();
+                this.turnPhase += 1;
+                div.innerHTML += `<img src="./game_files/whitePawn.png" height="50px" />`;
+            }
         } else {
             printFalse(`Inital Placement`);
         }
@@ -228,15 +231,9 @@ class Builder{
     constructor(){
         this.row = 99;
         this.column = 99;
-        this.height = 0;
+        this.height = 99;
     }
 
 }
 
 let game = new GameBoard();
-console.log(`x places`);
-game.initialPlacement(1, 1, 2, 2, 'x');
-console.log(`o places`);
-game.initialPlacement(3, 3, 2, 3, 'o');
-game.printBoard();
-game.printBuilders();
