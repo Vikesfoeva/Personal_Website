@@ -70,6 +70,13 @@ function squareClick(row_pick: number, column_pick: number){
         }
     } else if (game.turnPhase == 3) {
         if (game.buildSquare(row_pick, column_pick)) {
+            game.board[row_pick][column_pick] += 1;
+            const buildDiv: any = document.getElementById(`height_`.concat(String(row_pick), String(column_pick)));
+            const boxDiv: any = document.getElementById(`box_`.concat(String(row_pick), String(column_pick)));
+            buildDiv.innerHTML = String(game.board[row_pick][column_pick]);
+            if (game.board[row_pick][column_pick] == 4) {
+                boxDiv.style = "background-color: black; color: white;";
+            }
             game.changeTurn();
             game.turnPhase = 1;
             if (game.x_turn) {
@@ -255,9 +262,10 @@ class GameBoard {
 
         if (!this.isAdjacent(row, col, from_row, from_column)){
             printFalse(`You need to move to an adjacent square`);
-            printError(`That is not adjacent!`)
+            printError(`That is not adjacent!`);
             return false;
         }
+
         return true;
     }
 
@@ -266,6 +274,19 @@ class GameBoard {
             console.log(`Someone is there!`)
             return false;
         };
+
+        if (!this.isAdjacent(to_row, to_column, row, col)){
+            printFalse(`You need to move to an adjacent square`);
+            printError(`That is not adjacent!`)
+            return false;
+        }        
+
+        if (game.board[row][col] == 4) {
+            printFalse(`Cannot build higher than 4`);
+            printError(`Cannot build higher than 4`);
+            return false;
+        }
+
         return true;
     }
 
