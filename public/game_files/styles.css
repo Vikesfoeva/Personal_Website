@@ -4,6 +4,16 @@ https://medium.com/@gwhi94/creating-a-gameboard-with-css-grid-47da8ac25078
 
 div{
     padding: 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+p{
+    padding: 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+html{
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .game-board{ 
@@ -11,6 +21,11 @@ div{
     grid-template-columns: 120px 120px 120px 120px 120px;
     grid-template-rows: 120px 120px 120px 120px 120px 20px;
     justify-content: center;
+}
+
+h1{
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
 }
 
 .boxA {

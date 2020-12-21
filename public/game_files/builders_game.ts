@@ -2,9 +2,9 @@
 // Adapted from final project in CS 161 with permision from Professor Tim Alcon
 
 
-function button(){
-    console.log("I clicked");
-    window.alert("For feature requests, please cross your fingers");
+function squareClick(x_coord: number, y_coord: number){
+    console.log(`The x coordinate is ${x_coord} and the y coordinate is ${y_coord}.`);
+    console.log(document.getElementById(String(x_coord).concat(String(y_coord))));
 }
 
 function printFalse(input: String){

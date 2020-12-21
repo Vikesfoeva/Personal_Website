@@ -19,7 +19,7 @@
           </style>
           <link rel="stylesheet" href="./game_files/styles.css">
     </head>
-    <body>
+    <body style="background-color: azure;">
         <div>
             <h1>Instructions</h1>
             <p>
@@ -50,35 +50,32 @@
                 </ol>
             </p>
         </div>
-        <div>
-            <button onclick="button()">Click Me</button>
-        </div>
         <div class = "game-board">
-            <div class="boxA"></div>
-            <div class="boxB"></div>
-            <div class="boxA"></div>
-            <div class="boxB"></div>
-            <div class="boxA"></div>
-            <div class="boxB"></div>
-            <div class="boxA"></div>
-            <div class="boxB"></div>
-            <div class="boxA"></div>
-            <div class="boxB"></div>
-            <div class="boxA"></div>
-            <div class="boxB"></div>
-            <div class="boxA"></div>
-            <div class="boxB"></div>
-            <div class="boxA"></div>
-            <div class="boxB"></div>
-            <div class="boxA"></div>
-            <div class="boxB"></div>
-            <div class="boxA"></div>
-            <div class="boxB"></div>
-            <div class="boxA"></div>
-            <div class="boxB"></div>
-            <div class="boxA"></div>
-            <div class="boxB"></div>
-            <div class="boxA"></div>
+            <div class="boxA" id="00" onclick="squareClick(0, 0)"></div>
+            <div class="boxB" id="01" onclick="squareClick(0, 1)"></div>
+            <div class="boxA" id="02" onclick="squareClick(0, 2)"></div>
+            <div class="boxB" id="03" onclick="squareClick(0, 3)"><img src="./game_files/blackPawn.png" height="50px" /></div>
+            <div class="boxA" id="04" onclick="squareClick(0, 4)"></div>
+            <div class="boxB" id="10" onclick="squareClick(1, 0)"></div>
+            <div class="boxA" id="11" onclick="squareClick(1, 1)"></div>
+            <div class="boxB" id="12" onclick="squareClick(1, 2)"></div>
+            <div class="boxA" id="13" onclick="squareClick(1, 3)"></div>
+            <div class="boxB" id="14" onclick="squareClick(1, 4)"></div>
+            <div class="boxA" id="20" onclick="squareClick(2, 0)"></div>
+            <div class="boxB" id="21" onclick="squareClick(2, 1)"></div>
+            <div class="boxA" id="22" onclick="squareClick(2, 2)"></div>
+            <div class="boxB" id="23" onclick="squareClick(2, 3)"></div>
+            <div class="boxA" id="24" onclick="squareClick(2, 4)"></div>
+            <div class="boxB" id="30" onclick="squareClick(3, 0)"></div>
+            <div class="boxA" id="31" onclick="squareClick(3, 1)"></div>
+            <div class="boxB" id="32" onclick="squareClick(3, 2)"></div>
+            <div class="boxA" id="33" onclick="squareClick(3, 3)"></div>
+            <div class="boxB" id="34" onclick="squareClick(3, 4)"></div>
+            <div class="boxA" id="40" onclick="squareClick(4, 0)"></div>
+            <div class="boxB" id="41" onclick="squareClick(4, 1)"></div>
+            <div class="boxA" id="42" onclick="squareClick(4, 2)"></div>
+            <div class="boxB" id="43" onclick="squareClick(4, 3)"></div>
+            <div class="boxA" id="44" onclick="squareClick(4, 4)"></div>
         </div>
     </body>
     <footer>
