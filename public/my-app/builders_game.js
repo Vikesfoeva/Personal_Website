@@ -1,5 +1,7 @@
 // Author: Brandon Lenz
 // Adapted from final project in CS 161 with permision from Professor Tim Alcon
+// need to check for valid spots to build after moving
+// meed tp fix the logic for checking if a player no longer has any valid moves
 function squareClick(row_pick, column_pick) {
     var div = document.getElementById("piece_".concat(String(row_pick), String(column_pick)));
     if (game.turnPhase == 0) {
@@ -87,22 +89,33 @@ function squareClick(row_pick, column_pick) {
                 boxDiv.style = "background-color: black; color: white;";
             }
             clearError();
+            // Straight up victory check
+            if (game.x_turn && game.board[to_row][to_column] == 3) {
+                document.getElementById('step').innerHTML = step[8];
+                game.turnPhase = 99;
+                return true;
+            }
+            else if (!game.x_turn && game.board[to_row][to_column] == 3) {
+                document.getElementById('step').innerHTML = step[9];
+                game.turnPhase = 99;
+                return true;
+            }
             var b1 = void 0;
             var b2 = void 0;
             // Victory Check
-            if (game.x_turn) {
-                b1 = game.checkValidMoves(game.o_b1.row, game.o_b1.column);
-                b2 = game.checkValidMoves(game.o_b2.row, game.o_b2.column);
-                if ((!b1 && !b2) || game.board[to_row][to_column] == 3) {
-                    document.getElementById('step').innerHTML = step[8];
-                }
+            b1 = game.checkValidMoves(game.o_b1.row, game.o_b1.column);
+            b2 = game.checkValidMoves(game.o_b2.row, game.o_b2.column);
+            if ((!b1 && !b2)) {
+                document.getElementById('step').innerHTML = step[8];
+                game.turnPhase = 99;
+                return true;
             }
-            else {
-                b1 = game.checkValidMoves(game.x_b1.row, game.x_b1.column);
-                b2 = game.checkValidMoves(game.x_b2.row, game.x_b2.column);
-                if ((!b1 && !b2) || game.board[to_row][to_column] == 3) {
-                    document.getElementById('step').innerHTML = step[9];
-                }
+            b1 = game.checkValidMoves(game.x_b1.row, game.x_b1.column);
+            b2 = game.checkValidMoves(game.x_b2.row, game.x_b2.column);
+            if ((!b1 && !b2)) {
+                document.getElementById('step').innerHTML = step[9];
+                game.turnPhase = 99;
+                return true;
             }
             game.changeTurn();
             game.turnPhase = 1;
@@ -112,6 +125,7 @@ function squareClick(row_pick, column_pick) {
             else {
                 document.getElementById('step').innerHTML = step[5];
             }
+            game.record.push([from_row, from_column, to_row, to_column, row_pick, column_pick, game.x_turn]);
         }
     }
 }
@@ -135,6 +149,7 @@ var GameBoard = /** @class */ (function () {
         this.x_b2 = new Builder();
         this.o_b1 = new Builder();
         this.o_b2 = new Builder();
+        this.record = [];
     }
     GameBoard.prototype.initialPlacement = function (row, col, div) {
         // , row_b2: number, col_b2: number, player: String
@@ -268,38 +283,67 @@ var GameBoard = /** @class */ (function () {
     };
     GameBoard.prototype.checkValidMoves = function (row, col) {
         // Check if the builder they chose has valid moves
-        var thisMove;
+        // Still need to check if builder can build after moving
+        var validMoves = [[false, false, false], [false, false, false], [false, false, false]];
         for (var i = -1; i < 2; i++) {
             for (var j = -1; j < 2; j++) {
-                thisMove = false;
                 var row_check = row + i;
                 var col_check = col + j;
                 if (row_check < 0 || row_check > 4) {
-                    console.log("row check fail");
                     continue;
                 }
                 if (col_check < 0 || col_check > 4) {
-                    console.log("col check fail");
                     continue;
                 }
                 if (game.isOccupied(row_check, col_check)) {
-                    console.log("occupied fail");
                     continue;
                 }
                 if ((game.board[row_check][col_check] - game.board[row][col]) > 1) {
-                    console.log("height check fail;");
                     continue;
                 }
-                thisMove = true;
-                break;
-            }
-            console.log(thisMove);
-            if (thisMove) {
-                console.log('true should be returned');
-                return true;
+                var validBuilds = [[false, false, false], [false, false, false], [false, false, false]];
+                for (var k = -1; k < 2; k++) {
+                    for (var m = -1; m < 2; m++) {
+                        var build_row_check = row_check + k;
+                        var build_col_check = col_check + m;
+                        if (k == 0 && m == 0) {
+                            continue;
+                        }
+                        if (build_row_check < 0 || build_row_check > 4) {
+                            continue;
+                        }
+                        if (build_col_check < 0 || build_col_check > 4) {
+                            continue;
+                        }
+                        if (game.isOccupied(build_row_check, build_col_check)) {
+                            if (build_row_check != row || build_col_check != col) {
+                                continue;
+                            }
+                        }
+                        if (game.board[build_row_check][build_col_check] == 4) {
+                            continue;
+                        }
+                        validBuilds[k + 1][m + 1] = true;
+                    }
+                }
+                // exited valid build check
+                for (var x = 0; x < 3; x++) {
+                    for (var y = 0; y < 3; y++) {
+                        if (validBuilds[x][y]) {
+                            validMoves[i + 1][j + 1] = true;
+                        }
+                    }
+                }
             }
         }
-        console.log('ending fail');
+        // Exited valid move check
+        for (var x = 0; x < 3; x++) {
+            for (var y = 0; y < 3; y++) {
+                if (validMoves[x][y]) {
+                    return true;
+                }
+            }
+        }
         return false;
     };
     GameBoard.prototype.moveBuilder = function (row, col) {

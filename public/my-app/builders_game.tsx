@@ -81,21 +81,33 @@ function squareClick(row_pick: number, column_pick: number){
 
             clearError()
 
+            // Straight up victory check
+            if (game.x_turn && game.board[to_row][to_column] == 3) {
+                document.getElementById('step').innerHTML = step[8];
+                game.turnPhase = 99;
+                return true;
+            } else if (!game.x_turn && game.board[to_row][to_column] == 3) {
+                document.getElementById('step').innerHTML = step[9];
+                game.turnPhase = 99;
+                return true;
+            }
+
             let b1: boolean;
             let b2: boolean;
             // Victory Check
-            if (game.x_turn) {
-                b1 = game.checkValidMoves(game.o_b1.row, game.o_b1.column);
-                b2 = game.checkValidMoves(game.o_b2.row, game.o_b2.column);
-                if ((!b1 && !b2) || game.board[to_row][to_column] == 3) {
-                    document.getElementById('step').innerHTML = step[8];
-                }
-            } else {
-                b1 = game.checkValidMoves(game.x_b1.row, game.x_b1.column);
-                b2 = game.checkValidMoves(game.x_b2.row, game.x_b2.column);
-                if ((!b1 && !b2) || game.board[to_row][to_column] == 3) {
-                    document.getElementById('step').innerHTML = step[9];
-                }
+            b1 = game.checkValidMoves(game.o_b1.row, game.o_b1.column);
+            b2 = game.checkValidMoves(game.o_b2.row, game.o_b2.column);
+            if ((!b1 && !b2)) {
+                document.getElementById('step').innerHTML = step[8];
+                game.turnPhase = 99;
+                return true;
+            }
+            b1 = game.checkValidMoves(game.x_b1.row, game.x_b1.column);
+            b2 = game.checkValidMoves(game.x_b2.row, game.x_b2.column);
+            if ((!b1 && !b2)) {
+                document.getElementById('step').innerHTML = step[9];
+                game.turnPhase = 99;
+                return true;
             }
 
             game.changeTurn();
@@ -105,6 +117,7 @@ function squareClick(row_pick: number, column_pick: number){
             } else {
                 document.getElementById('step').innerHTML = step[5];
             }
+            game.record.push([from_row, from_column, to_row, to_column, row_pick, column_pick, game.x_turn]);
         }
     }
 
@@ -132,6 +145,7 @@ class GameBoard {
     x_b2: Builder;
     o_b1: Builder;
     o_b2: Builder;
+    record: any[][];
 
     constructor(){
         // Creates the board
@@ -143,6 +157,7 @@ class GameBoard {
         this.x_b2 = new Builder();
         this.o_b1 = new Builder();
         this.o_b2 = new Builder();
+        this.record = [];
     }
 
     initialPlacement(row: number, col: number, div: any) {
@@ -276,42 +291,79 @@ class GameBoard {
 
     checkValidMoves(row: number, col: number){
         // Check if the builder they chose has valid moves
-        let thisMove: boolean;
+        // Still need to check if builder can build after moving
+        let validMoves = [[false,false,false],[false,false,false],[false,false,false]];
         for (let i = -1; i < 2 ; i++) {
             for (let j = -1; j < 2; j ++) {
-                thisMove = false;
                 let row_check: number = row + i;
                 let col_check: number = col + j;
                 if (row_check < 0 || row_check > 4) {
-                    console.log(`row check fail`);
                     continue;
                 }
 
                 if (col_check < 0 || col_check > 4) {
-                    console.log(`col check fail`);
                     continue;
                 }
 
                 if (game.isOccupied(row_check, col_check)) {
-                    console.log(`occupied fail`);
                     continue;
                 }
 
                 if ((game.board[row_check][col_check] - game.board[row][col]) > 1) {
-                    console.log(`height check fail;`)
                     continue;
                 }
 
-                thisMove = true;
-                break;
-            }
-            console.log(thisMove)
-            if (thisMove) {
-                console.log('true should be returned')
-                return true;
+                let validBuilds: boolean[][] = [[false,false,false],[false,false,false],[false,false,false]];
+                for (let k = -1; k < 2 ; k++) {
+                    for (let m = -1; m < 2; m ++) {
+                        let build_row_check = row_check + k;
+                        let build_col_check = col_check + m;
+
+                        if (k==0 && m ==0) {
+                            continue;
+                        }
+
+                        if (build_row_check < 0 || build_row_check > 4) {
+                            continue;
+                        }
+
+                        if (build_col_check < 0 || build_col_check > 4) {
+                            continue;
+                        }
+
+                        if (game.isOccupied(build_row_check, build_col_check)){
+                            if (build_row_check != row || build_col_check != col) {
+                                continue;
+                            }
+                        }
+
+                        if (game.board[build_row_check][build_col_check] == 4){
+                            continue;
+                        }
+
+                        validBuilds[k+1][m+1] = true;
+                    }
+                    
+                }
+                // exited valid build check
+                for (let x =0; x < 3; x++) {
+                    for (let y=0; y < 3; y++) {
+                        if (validBuilds[x][y]) {
+                            validMoves[i+1][j+1] = true;
+                        }
+                    }
+                }
+                
             }
         }
-        console.log('ending fail')
+        // Exited valid move check
+        for (let x =0; x < 3; x++) {
+            for (let y=0; y < 3; y++) {
+                if (validMoves[x][y]) {
+                    return true;
+                }
+            }
+        }
         return false;
     }
 
