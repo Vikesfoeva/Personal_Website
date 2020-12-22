@@ -1,8 +1,9 @@
 // Author: Brandon Lenz
 // Adapted from final project in CS 161 with permision from Professor Tim Alcon
 
-// need to check for valid spots to build after moving
-// meed tp fix the logic for checking if a player no longer has any valid moves
+// ideas to improve
+// Highlighting valid moves, prettier board, computer AI, play vs human on local, play vs human elsewhere
+// Undo feature, choosing builder a or builder b aka not being locked in
 
 function squareClick(row_pick: number, column_pick: number){
     const div: any = document.getElementById(`piece_`.concat(String(row_pick),String(column_pick)));
