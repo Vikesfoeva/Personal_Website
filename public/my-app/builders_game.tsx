@@ -2,8 +2,9 @@
 // Adapted from final project in CS 161 with permision from Professor Tim Alcon
 
 // ideas to improve
-// Highlighting valid moves, prettier board, computer AI, play vs human on local, play vs human elsewhere
+// prettier board, computer AI, play vs human on local, play vs human elsewhere
 // Undo feature, choosing builder a or builder b aka not being locked in
+// seems to be a bug where victory is not always properly checked
 
 function squareClick(row_pick: number, column_pick: number){
     const div: any = document.getElementById(`piece_`.concat(String(row_pick),String(column_pick)));
@@ -11,38 +12,30 @@ function squareClick(row_pick: number, column_pick: number){
     if (game.turnPhase == 0) {
         game.initialPlacement(row_pick, column_pick, div);
     } else if (game.turnPhase == 1) {
-        if (game.clickMove(row_pick, column_pick)) {   
-            if (game.x_turn) {
-                document.getElementById('step').innerHTML = step[3];
-            } else {
-                document.getElementById('step').innerHTML = step[6];
-            }
-            clearError()
-            from_row = row_pick;
-            from_column = column_pick;
-            game.turnPhase += 1;
-            from_class = divBox.className;
-            divBox.className = `fromCell`;
 
-            // Add logic for highlighting cells
-            const validMovesList: any = game.checkValidMoves(row_pick, column_pick, true);
-            validMoves.length = 0;
-            for (let i = 0; i < 3; i++) {
-                for (let j = 0; j < 3; j++) {
-                    if (validMovesList[i][j]){
-                        const row_ref: number = row_pick + i - 1;
-                        const col_ref: number = column_pick + j - 1;
-                        const divMoves: any = document.getElementById(`box_`.concat(String(row_ref),String(col_ref)));
-                        validMoves.push([row_ref, col_ref, divMoves.className])
-                        divMoves.className = "highlighted";
-                    }
-                }
-            }
-            console.log(validMoves);
-        } else {
-            document.getElementById('error').innerHTML = `Please choose a builder`;
-        };
+        game.turnPhaseOne(row_pick, column_pick, divBox);
+
     } else if (game.turnPhase == 2) {
+        // If the player selects their other builder, re-route the logic to that builder
+        if (game.x_turn) {
+            if (row_pick == game.x_b1.row && column_pick == game.x_b1.column) {
+                game.changePhaseOne(row_pick, column_pick, divBox);
+                return;
+            } else if (row_pick == game.x_b2.row && column_pick == game.x_b2.column){
+                game.changePhaseOne(row_pick, column_pick, divBox);
+                return;
+            }
+        } else {
+            if (row_pick == game.o_b1.row && column_pick == game.o_b1.column) {
+                game.changePhaseOne(row_pick, column_pick, divBox);
+                return;
+            } else if (row_pick == game.o_b2.row && column_pick == game.o_b2.column){
+                game.changePhaseOne(row_pick, column_pick, divBox);
+                return;
+            }
+        }
+
+        // Attempt to proceed with phase 2
         if (game.moveBuilder(row_pick, column_pick)) {
             let divFrom: any = document.getElementById(`piece_`.concat(String(from_row), String(from_column)));
             let divTo: any = document.getElementById(`piece_`.concat(String(row_pick), String(column_pick)));
@@ -50,7 +43,7 @@ function squareClick(row_pick: number, column_pick: number){
             divFrom.innerHTML = ``;
             to_row = row_pick;
             to_column = column_pick;
-            game.turnPhase += 1;
+            game.turnPhase = 3;
 
             if (game.x_turn) {
                 document.getElementById('step').innerHTML = step[4];
@@ -63,6 +56,23 @@ function squareClick(row_pick: number, column_pick: number){
             validMoves.forEach(element => {
                 document.getElementById(`box_`.concat(String(element[0]), String(element[1]))).className = element[2];
             });
+
+            // Highlight valid build cells
+            validBuilds.length = 0;
+            const validBuildsList: any = game.validBuildsAvail(row_pick, column_pick, true);
+            for (let i = 0; i < 3; i++) {
+                for (let j = 0; j < 3; j++) {
+                    if (validBuildsList[i][j]){
+                        const row_ref: number = row_pick + i - 1;
+                        const col_ref: number = column_pick + j - 1;
+                        const divBuilds: any = document.getElementById(`box_`.concat(String(row_ref),String(col_ref)));
+                        validBuilds.push([row_ref, col_ref, divBuilds.className])
+                        divBuilds.className = "highlightedBuild";
+                    }
+                }
+            }
+            
+            console.log(validBuilds);
 
             clearError()
             if (game.x_turn) {
@@ -98,6 +108,7 @@ function squareClick(row_pick: number, column_pick: number){
         }
     } else if (game.turnPhase == 3) {
         if (game.buildSquare(row_pick, column_pick)) {
+
             game.board[row_pick][column_pick] += 1;
             const buildDiv: any = document.getElementById(`height_`.concat(String(row_pick), String(column_pick)));
             const boxDiv: any = document.getElementById(`box_`.concat(String(row_pick), String(column_pick)));
@@ -106,15 +117,21 @@ function squareClick(row_pick: number, column_pick: number){
                 boxDiv.style = "background-color: black; color: white;";
             }
 
+            validBuilds.forEach(element => {
+                document.getElementById(`box_`.concat(String(element[0]), String(element[1]))).className = element[2];
+            });
+
             clearError()
 
             // Straight up victory check
-            if (game.x_turn && game.board[to_row][to_column] == 3) {
+            if (game.x_b1.height == 3 || game.x_b2.height == 3) {
                 document.getElementById('step').innerHTML = step[8];
+                console.log('I hit');
                 game.turnPhase = 99;
                 return true;
-            } else if (!game.x_turn && game.board[to_row][to_column] == 3) {
+            } else if (game.o_b1.height == 3 || game.o_b2.height == 3) {
                 document.getElementById('step').innerHTML = step[9];
+                console.log('I hit');
                 game.turnPhase = 99;
                 return true;
             }
@@ -185,6 +202,48 @@ class GameBoard {
         this.o_b1 = new Builder();
         this.o_b2 = new Builder();
         this.record = [];
+    }
+
+    changePhaseOne(row_pick: number, column_pick: number, divBox: any){
+        document.getElementById(`box_`.concat(String(from_row), String(from_column))).className = from_class;
+        validMoves.forEach(element => {
+            document.getElementById(`box_`.concat(String(element[0]), String(element[1]))).className = element[2];
+        });
+        game.turnPhaseOne(row_pick, column_pick, divBox);
+    }
+
+    turnPhaseOne(row_pick: number, column_pick: number, divBox: any){
+        if (game.clickMove(row_pick, column_pick)) {   
+            if (game.x_turn) {
+                document.getElementById('step').innerHTML = step[3];
+            } else {
+                document.getElementById('step').innerHTML = step[6];
+            }
+            clearError()
+            from_row = row_pick;
+            from_column = column_pick;
+            game.turnPhase = 2;
+            from_class = divBox.className;
+            divBox.className = `fromCell`;
+
+            // Add logic for highlighting cells
+            const validMovesList: any = game.checkValidMoves(row_pick, column_pick, true);
+            validMoves.length = 0;
+            for (let i = 0; i < 3; i++) {
+                for (let j = 0; j < 3; j++) {
+                    if (validMovesList[i][j]){
+                        const row_ref: number = row_pick + i - 1;
+                        const col_ref: number = column_pick + j - 1;
+                        const divMoves: any = document.getElementById(`box_`.concat(String(row_ref),String(col_ref)));
+                        validMoves.push([row_ref, col_ref, divMoves.className])
+                        divMoves.className = "highlightedMove";
+                    }
+                }
+            }
+        } else {
+            document.getElementById('error').innerHTML = `Please choose a builder`;
+        };
+
     }
 
     initialPlacement(row: number, col: number, div: any) {
@@ -311,7 +370,7 @@ class GameBoard {
         } else {
             printFalse(`printFalse`);
         }
-        if (this.checkValidMoves(row, col)) {
+        if (game.checkValidMoves(row, col, false)) {
             return true;
         }
     }
@@ -340,38 +399,8 @@ class GameBoard {
                     continue;
                 }
 
-                let validBuilds: boolean[][] = [[false,false,false],[false,false,false],[false,false,false]];
-                for (let k = -1; k < 2 ; k++) {
-                    for (let m = -1; m < 2; m ++) {
-                        let build_row_check = row_check + k;
-                        let build_col_check = col_check + m;
+                let validBuilds: any = game.validBuildsAvail(row_check, col_check, true);
 
-                        if (k==0 && m ==0) {
-                            continue;
-                        }
-
-                        if (build_row_check < 0 || build_row_check > 4) {
-                            continue;
-                        }
-
-                        if (build_col_check < 0 || build_col_check > 4) {
-                            continue;
-                        }
-
-                        if (game.isOccupied(build_row_check, build_col_check)){
-                            if (build_row_check != row || build_col_check != col) {
-                                continue;
-                            }
-                        }
-
-                        if (game.board[build_row_check][build_col_check] == 4){
-                            continue;
-                        }
-
-                        validBuilds[k+1][m+1] = true;
-                    }
-                    
-                }
                 // exited valid build check
                 for (let x =0; x < 3; x++) {
                     for (let y=0; y < 3; y++) {
@@ -404,9 +433,51 @@ class GameBoard {
         }
     }
 
+    validBuildsAvail(row: number, col: number, buildSet: boolean = false) {
+        let validBuilds: boolean[][] = [[false,false,false],[false,false,false],[false,false,false]];
+        for (let k = -1; k < 2 ; k++) {
+            for (let m = -1; m < 2; m ++) {
+                let build_row_check = row + k;
+                let build_col_check = col + m;
+
+                if (k==0 && m ==0) {
+                    continue;
+                }
+
+                if (build_row_check == from_row && build_col_check == from_column){
+                    validBuilds[k+1][m+1] = true;
+                    continue;
+                }
+
+                if (build_row_check < 0 || build_row_check > 4) {
+                    continue;
+                }
+
+                if (build_col_check < 0 || build_col_check > 4) {
+                    continue;
+                }
+
+                if (game.isOccupied(build_row_check, build_col_check)){
+                    if (build_row_check != row || build_col_check != col) {
+                        continue;
+                    }
+                }
+
+                if (game.board[build_row_check][build_col_check] == 4){
+                    continue;
+                }
+
+                validBuilds[k+1][m+1] = true;
+            }
+            
+        }
+        return validBuilds;
+    }
+
     moveBuilder(row: number, col: number) {
         if (game.isOccupied(row, col)) {
             printError(`Somone is already there!`);
+            console.log(`false 1`);
             return false;
         }
         
@@ -568,5 +639,6 @@ let from_class: any;
 let validMoves: any = [];
 let to_row: number;
 let to_column: number;
+let validBuilds: any = [];
 let build_row: number;
 let build_column: number;

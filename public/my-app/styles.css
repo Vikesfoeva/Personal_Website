@@ -57,8 +57,13 @@ border: 2px solid black;
     overflow: auto;
 }
 
-.highlighted{
+.highlightedMove{
     background-color: yellow;
+    border: 2px solid black;
+}
+
+.highlightedBuild{
+    background-color: cyan;
     border: 2px solid black;
 }
 

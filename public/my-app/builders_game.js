@@ -3,6 +3,7 @@
 // ideas to improve
 // Highlighting valid moves, prettier board, computer AI, play vs human on local, play vs human elsewhere
 // Undo feature, choosing builder a or builder b aka not being locked in
+// seems to be a bug where victory is not always properly checked
 function squareClick(row_pick, column_pick) {
     var div = document.getElementById("piece_".concat(String(row_pick), String(column_pick)));
     var divBox = document.getElementById("box_".concat(String(row_pick), String(column_pick)));
@@ -10,41 +11,31 @@ function squareClick(row_pick, column_pick) {
         game.initialPlacement(row_pick, column_pick, div);
     }
     else if (game.turnPhase == 1) {
-        if (game.clickMove(row_pick, column_pick)) {
-            if (game.x_turn) {
-                document.getElementById('step').innerHTML = step[3];
-            }
-            else {
-                document.getElementById('step').innerHTML = step[6];
-            }
-            clearError();
-            from_row = row_pick;
-            from_column = column_pick;
-            game.turnPhase += 1;
-            from_class = divBox.className;
-            divBox.className = "fromCell";
-            // Add logic for highlighting cells
-            var validMovesList = game.checkValidMoves(row_pick, column_pick, true);
-            validMoves.length = 0;
-            for (var i = 0; i < 3; i++) {
-                for (var j = 0; j < 3; j++) {
-                    if (validMovesList[i][j]) {
-                        var row_ref = row_pick + i - 1;
-                        var col_ref = column_pick + j - 1;
-                        var divMoves = document.getElementById("box_".concat(String(row_ref), String(col_ref)));
-                        validMoves.push([row_ref, col_ref, divMoves.className]);
-                        divMoves.className = "highlighted";
-                    }
-                }
-            }
-            console.log(validMoves);
-        }
-        else {
-            document.getElementById('error').innerHTML = "Please choose a builder";
-        }
-        ;
+        game.turnPhaseOne(row_pick, column_pick, divBox);
     }
     else if (game.turnPhase == 2) {
+        // If the player selects their other builder, re-route the logic to that builder
+        if (game.x_turn) {
+            if (row_pick == game.x_b1.row && column_pick == game.x_b1.column) {
+                game.changePhaseOne(row_pick, column_pick, divBox);
+                return;
+            }
+            else if (row_pick == game.x_b2.row && column_pick == game.x_b2.column) {
+                game.changePhaseOne(row_pick, column_pick, divBox);
+                return;
+            }
+        }
+        else {
+            if (row_pick == game.o_b1.row && column_pick == game.o_b1.column) {
+                game.changePhaseOne(row_pick, column_pick, divBox);
+                return;
+            }
+            else if (row_pick == game.o_b2.row && column_pick == game.o_b2.column) {
+                game.changePhaseOne(row_pick, column_pick, divBox);
+                return;
+            }
+        }
+        // Attempt to proceed with phase 2
         if (game.moveBuilder(row_pick, column_pick)) {
             var divFrom = document.getElementById("piece_".concat(String(from_row), String(from_column)));
             var divTo = document.getElementById("piece_".concat(String(row_pick), String(column_pick)));
@@ -52,7 +43,7 @@ function squareClick(row_pick, column_pick) {
             divFrom.innerHTML = "";
             to_row = row_pick;
             to_column = column_pick;
-            game.turnPhase += 1;
+            game.turnPhase = 3;
             if (game.x_turn) {
                 document.getElementById('step').innerHTML = step[4];
             }
@@ -64,6 +55,21 @@ function squareClick(row_pick, column_pick) {
             validMoves.forEach(function (element) {
                 document.getElementById("box_".concat(String(element[0]), String(element[1]))).className = element[2];
             });
+            // Highlight valid build cells
+            validBuilds.length = 0;
+            var validBuildsList = game.validBuildsAvail(row_pick, column_pick, true);
+            for (var i = 0; i < 3; i++) {
+                for (var j = 0; j < 3; j++) {
+                    if (validBuildsList[i][j]) {
+                        var row_ref = row_pick + i - 1;
+                        var col_ref = column_pick + j - 1;
+                        var divBuilds = document.getElementById("box_".concat(String(row_ref), String(col_ref)));
+                        validBuilds.push([row_ref, col_ref, divBuilds.className]);
+                        divBuilds.className = "highlightedBuild";
+                    }
+                }
+            }
+            console.log(validBuilds);
             clearError();
             if (game.x_turn) {
                 if (from_row == game.x_b1.row && from_column == game.x_b1.column) {
@@ -112,15 +118,20 @@ function squareClick(row_pick, column_pick) {
             if (game.board[row_pick][column_pick] == 4) {
                 boxDiv.style = "background-color: black; color: white;";
             }
+            validBuilds.forEach(function (element) {
+                document.getElementById("box_".concat(String(element[0]), String(element[1]))).className = element[2];
+            });
             clearError();
             // Straight up victory check
-            if (game.x_turn && game.board[to_row][to_column] == 3) {
+            if (game.x_b1.height == 3 || game.x_b2.height == 3) {
                 document.getElementById('step').innerHTML = step[8];
+                console.log('I hit');
                 game.turnPhase = 99;
                 return true;
             }
-            else if (!game.x_turn && game.board[to_row][to_column] == 3) {
+            else if (game.o_b1.height == 3 || game.o_b2.height == 3) {
                 document.getElementById('step').innerHTML = step[9];
+                console.log('I hit');
                 game.turnPhase = 99;
                 return true;
             }
@@ -175,6 +186,47 @@ var GameBoard = /** @class */ (function () {
         this.o_b2 = new Builder();
         this.record = [];
     }
+    GameBoard.prototype.changePhaseOne = function (row_pick, column_pick, divBox) {
+        document.getElementById("box_".concat(String(from_row), String(from_column))).className = from_class;
+        validMoves.forEach(function (element) {
+            document.getElementById("box_".concat(String(element[0]), String(element[1]))).className = element[2];
+        });
+        game.turnPhaseOne(row_pick, column_pick, divBox);
+    };
+    GameBoard.prototype.turnPhaseOne = function (row_pick, column_pick, divBox) {
+        if (game.clickMove(row_pick, column_pick)) {
+            if (game.x_turn) {
+                document.getElementById('step').innerHTML = step[3];
+            }
+            else {
+                document.getElementById('step').innerHTML = step[6];
+            }
+            clearError();
+            from_row = row_pick;
+            from_column = column_pick;
+            game.turnPhase = 2;
+            from_class = divBox.className;
+            divBox.className = "fromCell";
+            // Add logic for highlighting cells
+            var validMovesList = game.checkValidMoves(row_pick, column_pick, true);
+            validMoves.length = 0;
+            for (var i = 0; i < 3; i++) {
+                for (var j = 0; j < 3; j++) {
+                    if (validMovesList[i][j]) {
+                        var row_ref = row_pick + i - 1;
+                        var col_ref = column_pick + j - 1;
+                        var divMoves = document.getElementById("box_".concat(String(row_ref), String(col_ref)));
+                        validMoves.push([row_ref, col_ref, divMoves.className]);
+                        divMoves.className = "highlightedMove";
+                    }
+                }
+            }
+        }
+        else {
+            document.getElementById('error').innerHTML = "Please choose a builder";
+        }
+        ;
+    };
     GameBoard.prototype.initialPlacement = function (row, col, div) {
         // , row_b2: number, col_b2: number, player: String
         if (this.isOccupied(row, col)) {
@@ -301,7 +353,7 @@ var GameBoard = /** @class */ (function () {
         else {
             printFalse("printFalse");
         }
-        if (this.checkValidMoves(row, col)) {
+        if (game.checkValidMoves(row, col, false)) {
             return true;
         }
     };
@@ -326,35 +378,11 @@ var GameBoard = /** @class */ (function () {
                 if ((game.board[row_check][col_check] - game.board[row][col]) > 1) {
                     continue;
                 }
-                var validBuilds = [[false, false, false], [false, false, false], [false, false, false]];
-                for (var k = -1; k < 2; k++) {
-                    for (var m = -1; m < 2; m++) {
-                        var build_row_check = row_check + k;
-                        var build_col_check = col_check + m;
-                        if (k == 0 && m == 0) {
-                            continue;
-                        }
-                        if (build_row_check < 0 || build_row_check > 4) {
-                            continue;
-                        }
-                        if (build_col_check < 0 || build_col_check > 4) {
-                            continue;
-                        }
-                        if (game.isOccupied(build_row_check, build_col_check)) {
-                            if (build_row_check != row || build_col_check != col) {
-                                continue;
-                            }
-                        }
-                        if (game.board[build_row_check][build_col_check] == 4) {
-                            continue;
-                        }
-                        validBuilds[k + 1][m + 1] = true;
-                    }
-                }
+                var validBuilds_1 = game.validBuildsAvail(row_check, col_check, true);
                 // exited valid build check
                 for (var x = 0; x < 3; x++) {
                     for (var y = 0; y < 3; y++) {
-                        if (validBuilds[x][y]) {
+                        if (validBuilds_1[x][y]) {
                             validMoves[i + 1][j + 1] = true;
                         }
                     }
@@ -380,9 +408,43 @@ var GameBoard = /** @class */ (function () {
             return false;
         }
     };
+    GameBoard.prototype.validBuildsAvail = function (row, col, buildSet) {
+        if (buildSet === void 0) { buildSet = false; }
+        var validBuilds = [[false, false, false], [false, false, false], [false, false, false]];
+        for (var k = -1; k < 2; k++) {
+            for (var m = -1; m < 2; m++) {
+                var build_row_check = row + k;
+                var build_col_check = col + m;
+                if (k == 0 && m == 0) {
+                    continue;
+                }
+                if (build_row_check == from_row && build_col_check == from_column) {
+                    validBuilds[k + 1][m + 1] = true;
+                    continue;
+                }
+                if (build_row_check < 0 || build_row_check > 4) {
+                    continue;
+                }
+                if (build_col_check < 0 || build_col_check > 4) {
+                    continue;
+                }
+                if (game.isOccupied(build_row_check, build_col_check)) {
+                    if (build_row_check != row || build_col_check != col) {
+                        continue;
+                    }
+                }
+                if (game.board[build_row_check][build_col_check] == 4) {
+                    continue;
+                }
+                validBuilds[k + 1][m + 1] = true;
+            }
+        }
+        return validBuilds;
+    };
     GameBoard.prototype.moveBuilder = function (row, col) {
         if (game.isOccupied(row, col)) {
             printError("Somone is already there!");
+            console.log("false 1");
             return false;
         }
         if ((this.board[row][col] - this.board[from_row][from_column]) > 1) {
@@ -526,5 +588,6 @@ var from_class;
 var validMoves = [];
 var to_row;
 var to_column;
+var validBuilds = [];
 var build_row;
 var build_column;
