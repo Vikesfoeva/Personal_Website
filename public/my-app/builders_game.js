@@ -27,8 +27,6 @@ function squareClick(row_pick, column_pick) {
         if (game.moveBuilder(row_pick, column_pick)) {
             var divFrom = document.getElementById("piece_".concat(String(from_row), String(from_column)));
             var divTo = document.getElementById("piece_".concat(String(row_pick), String(column_pick)));
-            console.log(divFrom.innerHTML);
-            console.log(divTo.innerHTML);
             divTo.innerHTML = divFrom.innerHTML;
             divFrom.innerHTML = "";
             to_row = row_pick;
@@ -53,7 +51,7 @@ function squareClick(row_pick, column_pick) {
                     game.x_b2.height = game.board[to_row][to_column];
                 }
                 else {
-                    console.log("Something went wrong");
+                    printFalse("printFalse");
                 }
             }
             else if (!game.x_turn) {
@@ -68,11 +66,11 @@ function squareClick(row_pick, column_pick) {
                     game.o_b2.height = game.board[to_row][to_column];
                 }
                 else {
-                    console.log("Something went wrong");
+                    printFalse("printFalse");
                 }
             }
             else {
-                console.log("Something went wrong");
+                printFalse("printFalse");
             }
         }
         else {
@@ -86,7 +84,25 @@ function squareClick(row_pick, column_pick) {
             var boxDiv = document.getElementById("box_".concat(String(row_pick), String(column_pick)));
             buildDiv.innerHTML = String(game.board[row_pick][column_pick]);
             if (game.board[row_pick][column_pick] == 4) {
-                boxDiv.style = "background-color: black; color: white; float: center;";
+                boxDiv.style = "background-color: black; color: white;";
+            }
+            clearError();
+            var b1 = void 0;
+            var b2 = void 0;
+            // Victory Check
+            if (game.x_turn) {
+                b1 = game.checkValidMoves(game.o_b1.row, game.o_b1.column);
+                b2 = game.checkValidMoves(game.o_b2.row, game.o_b2.column);
+                if ((!b1 && !b2) || game.board[to_row][to_column] == 3) {
+                    document.getElementById('step').innerHTML = step[8];
+                }
+            }
+            else {
+                b1 = game.checkValidMoves(game.x_b1.row, game.x_b1.column);
+                b2 = game.checkValidMoves(game.x_b2.row, game.x_b2.column);
+                if ((!b1 && !b2) || game.board[to_row][to_column] == 3) {
+                    document.getElementById('step').innerHTML = step[9];
+                }
             }
             game.changeTurn();
             game.turnPhase = 1;
@@ -96,7 +112,6 @@ function squareClick(row_pick, column_pick) {
             else {
                 document.getElementById('step').innerHTML = step[5];
             }
-            clearError();
         }
     }
 }
@@ -167,6 +182,7 @@ var GameBoard = /** @class */ (function () {
         }
         else {
             printFalse("Inital Placement");
+            printError("Invalid placement");
         }
     };
     GameBoard.prototype.onBoard = function (row, column) {
@@ -179,7 +195,7 @@ var GameBoard = /** @class */ (function () {
         return true;
     };
     GameBoard.prototype.isOccupied = function (row, column) {
-        // returns false space is free (not occupied)
+        // returns false if space is free (not occupied)
         if (row == this.x_b1.row && column == this.x_b1.column) {
             return true;
         }
@@ -214,17 +230,19 @@ var GameBoard = /** @class */ (function () {
     GameBoard.prototype.isAdjacent = function (row1, column1, row2, column2) {
         if (Math.abs(row1 - row2) > 1 || Math.abs(column1 - column2) > 1) {
             printFalse("Not adjacent");
+            printError("Not adjacent");
             return false;
         }
         return true;
     };
     GameBoard.prototype.clickMove = function (row, col) {
+        // Returns true if the user successfully selects a builder who has moves
         if (game.x_turn) {
             if (row == game.x_b1.row && col == game.x_b1.column) {
-                return true;
+                // 
             }
             else if (row == game.x_b2.row && col == game.x_b2.column) {
-                return true;
+                //
             }
             else {
                 return false;
@@ -232,18 +250,57 @@ var GameBoard = /** @class */ (function () {
         }
         else if (!game.x_turn) {
             if (row == game.o_b1.row && col == game.o_b1.column) {
-                return true;
+                //
             }
             else if (row == game.o_b2.row && col == game.o_b2.column) {
-                return true;
+                //
             }
             else {
                 return false;
             }
         }
         else {
-            console.log("Something broke");
+            printFalse("printFalse");
         }
+        if (this.checkValidMoves(row, col)) {
+            return true;
+        }
+    };
+    GameBoard.prototype.checkValidMoves = function (row, col) {
+        // Check if the builder they chose has valid moves
+        var thisMove;
+        for (var i = -1; i < 2; i++) {
+            for (var j = -1; j < 2; j++) {
+                thisMove = false;
+                var row_check = row + i;
+                var col_check = col + j;
+                if (row_check < 0 || row_check > 4) {
+                    console.log("row check fail");
+                    continue;
+                }
+                if (col_check < 0 || col_check > 4) {
+                    console.log("col check fail");
+                    continue;
+                }
+                if (game.isOccupied(row_check, col_check)) {
+                    console.log("occupied fail");
+                    continue;
+                }
+                if ((game.board[row_check][col_check] - game.board[row][col]) > 1) {
+                    console.log("height check fail;");
+                    continue;
+                }
+                thisMove = true;
+                break;
+            }
+            console.log(thisMove);
+            if (thisMove) {
+                console.log('true should be returned');
+                return true;
+            }
+        }
+        console.log('ending fail');
+        return false;
     };
     GameBoard.prototype.moveBuilder = function (row, col) {
         if (game.isOccupied(row, col)) {
@@ -265,6 +322,7 @@ var GameBoard = /** @class */ (function () {
     GameBoard.prototype.buildSquare = function (row, col) {
         if (game.isOccupied(row, col)) {
             console.log("Someone is there!");
+            printError("Someone is there!");
             return false;
         }
         ;

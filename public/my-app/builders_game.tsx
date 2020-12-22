@@ -1,6 +1,9 @@
 // Author: Brandon Lenz
 // Adapted from final project in CS 161 with permision from Professor Tim Alcon
 
+// need to check for valid spots to build after moving
+// meed tp fix the logic for checking if a player no longer has any valid moves
+
 function squareClick(row_pick: number, column_pick: number){
     const div: any = document.getElementById(`piece_`.concat(String(row_pick),String(column_pick)));
     if (game.turnPhase == 0) {
@@ -23,8 +26,6 @@ function squareClick(row_pick: number, column_pick: number){
         if (game.moveBuilder(row_pick, column_pick)) {
             let divFrom: any = document.getElementById(`piece_`.concat(String(from_row), String(from_column)));
             let divTo: any = document.getElementById(`piece_`.concat(String(row_pick), String(column_pick)));
-            console.log(divFrom.innerHTML);
-            console.log(divTo.innerHTML);
             divTo.innerHTML = divFrom.innerHTML;
             divFrom.innerHTML = ``;
             to_row = row_pick;
@@ -47,7 +48,7 @@ function squareClick(row_pick: number, column_pick: number){
                     game.x_b2.column = to_column;
                     game.x_b2.height = game.board[to_row][to_column];
                 } else {
-                    console.log(`Something went wrong`);
+                    printFalse(`printFalse`);
                 }
             } else if(!game.x_turn) {
                 if (from_row == game.o_b1.row && from_column == game.o_b1.column) {
@@ -59,10 +60,10 @@ function squareClick(row_pick: number, column_pick: number){
                     game.o_b2.column = to_column;
                     game.o_b2.height = game.board[to_row][to_column];
                 } else {
-                    console.log(`Something went wrong`);
+                    printFalse(`printFalse`);
                 }
             } else {
-                console.log(`Something went wrong`);
+                printFalse(`printFalse`);
             }
 
         } else {
@@ -77,6 +78,26 @@ function squareClick(row_pick: number, column_pick: number){
             if (game.board[row_pick][column_pick] == 4) {
                 boxDiv.style = "background-color: black; color: white;";
             }
+
+            clearError()
+
+            let b1: boolean;
+            let b2: boolean;
+            // Victory Check
+            if (game.x_turn) {
+                b1 = game.checkValidMoves(game.o_b1.row, game.o_b1.column);
+                b2 = game.checkValidMoves(game.o_b2.row, game.o_b2.column);
+                if ((!b1 && !b2) || game.board[to_row][to_column] == 3) {
+                    document.getElementById('step').innerHTML = step[8];
+                }
+            } else {
+                b1 = game.checkValidMoves(game.x_b1.row, game.x_b1.column);
+                b2 = game.checkValidMoves(game.x_b2.row, game.x_b2.column);
+                if ((!b1 && !b2) || game.board[to_row][to_column] == 3) {
+                    document.getElementById('step').innerHTML = step[9];
+                }
+            }
+
             game.changeTurn();
             game.turnPhase = 1;
             if (game.x_turn) {
@@ -84,7 +105,6 @@ function squareClick(row_pick: number, column_pick: number){
             } else {
                 document.getElementById('step').innerHTML = step[5];
             }
-            clearError()
         }
     }
 
@@ -168,6 +188,7 @@ class GameBoard {
             }
         } else {
             printFalse(`Inital Placement`);
+            printError(`Invalid placement`);
         }
     }
 
@@ -182,7 +203,7 @@ class GameBoard {
     }
 
     isOccupied(row: number, column: number){
-        // returns false space is free (not occupied)
+        // returns false if space is free (not occupied)
         if (row == this.x_b1.row && column == this.x_b1.column){
             return true;
         } else if(row == this.x_b2.row && column == this.x_b2.column){
@@ -220,6 +241,7 @@ class GameBoard {
 
         if (Math.abs(row1 - row2) > 1 || Math.abs(column1 - column2) > 1) {
             printFalse(`Not adjacent`);
+            printError(`Not adjacent`);
             return false;
         }
 
@@ -227,25 +249,70 @@ class GameBoard {
     }
 
     clickMove(row: number, col: number) {
+        // Returns true if the user successfully selects a builder who has moves
         if (game.x_turn){
             if (row == game.x_b1.row && col == game.x_b1.column) {
-                return true;
+                // 
             } else if (row == game.x_b2.row && col == game.x_b2.column) {
-                return true;
+                //
             } else {
                 return false;
             }
         } else if (!game.x_turn) {
             if (row == game.o_b1.row && col == game.o_b1.column) {
-                return true;
+                //
             } else if (row == game.o_b2.row && col == game.o_b2.column) {
-                return true;
+                //
             } else {
                 return false;
             }
         } else {
-            console.log(`Something broke`);
+            printFalse(`printFalse`);
         }
+        if (this.checkValidMoves(row, col)) {
+            return true;
+        }
+    }
+
+    checkValidMoves(row: number, col: number){
+        // Check if the builder they chose has valid moves
+        let thisMove: boolean;
+        for (let i = -1; i < 2 ; i++) {
+            for (let j = -1; j < 2; j ++) {
+                thisMove = false;
+                let row_check: number = row + i;
+                let col_check: number = col + j;
+                if (row_check < 0 || row_check > 4) {
+                    console.log(`row check fail`);
+                    continue;
+                }
+
+                if (col_check < 0 || col_check > 4) {
+                    console.log(`col check fail`);
+                    continue;
+                }
+
+                if (game.isOccupied(row_check, col_check)) {
+                    console.log(`occupied fail`);
+                    continue;
+                }
+
+                if ((game.board[row_check][col_check] - game.board[row][col]) > 1) {
+                    console.log(`height check fail;`)
+                    continue;
+                }
+
+                thisMove = true;
+                break;
+            }
+            console.log(thisMove)
+            if (thisMove) {
+                console.log('true should be returned')
+                return true;
+            }
+        }
+        console.log('ending fail')
+        return false;
     }
 
     moveBuilder(row: number, col: number) {
@@ -272,6 +339,7 @@ class GameBoard {
     buildSquare(row: number, col: number) {
         if (game.isOccupied(row, col)){
             console.log(`Someone is there!`)
+            printError(`Someone is there!`);
             return false;
         };
 
