@@ -7,10 +7,11 @@
 
 function squareClick(row_pick: number, column_pick: number){
     const div: any = document.getElementById(`piece_`.concat(String(row_pick),String(column_pick)));
+    const divBox: any = document.getElementById(`box_`.concat(String(row_pick),String(column_pick)))
     if (game.turnPhase == 0) {
         game.initialPlacement(row_pick, column_pick, div);
     } else if (game.turnPhase == 1) {
-        if (game.clickMove(row_pick, column_pick)) {
+        if (game.clickMove(row_pick, column_pick)) {   
             if (game.x_turn) {
                 document.getElementById('step').innerHTML = step[3];
             } else {
@@ -20,6 +21,24 @@ function squareClick(row_pick: number, column_pick: number){
             from_row = row_pick;
             from_column = column_pick;
             game.turnPhase += 1;
+            from_class = divBox.className;
+            divBox.className = `fromCell`;
+
+            // Add logic for highlighting cells
+            const validMovesList: any = game.checkValidMoves(row_pick, column_pick, true);
+            validMoves.length = 0;
+            for (let i = 0; i < 3; i++) {
+                for (let j = 0; j < 3; j++) {
+                    if (validMovesList[i][j]){
+                        const row_ref: number = row_pick + i - 1;
+                        const col_ref: number = column_pick + j - 1;
+                        const divMoves: any = document.getElementById(`box_`.concat(String(row_ref),String(col_ref)));
+                        validMoves.push([row_ref, col_ref, divMoves.className])
+                        divMoves.className = "highlighted";
+                    }
+                }
+            }
+            console.log(validMoves);
         } else {
             document.getElementById('error').innerHTML = `Please choose a builder`;
         };
@@ -38,6 +57,13 @@ function squareClick(row_pick: number, column_pick: number){
             } else {
                 document.getElementById('step').innerHTML = step[7];
             }
+
+            // Sets the cells back to their old color
+            document.getElementById(`box_`.concat(String(from_row), String(from_column))).className = from_class;
+            validMoves.forEach(element => {
+                document.getElementById(`box_`.concat(String(element[0]), String(element[1]))).className = element[2];
+            });
+
             clearError()
             if (game.x_turn) {
                 if (from_row == game.x_b1.row && from_column == game.x_b1.column) {
@@ -93,8 +119,8 @@ function squareClick(row_pick: number, column_pick: number){
                 return true;
             }
 
-            let b1: boolean;
-            let b2: boolean;
+            let b1: any;
+            let b2: any;
             // Victory Check
             b1 = game.checkValidMoves(game.o_b1.row, game.o_b1.column);
             b2 = game.checkValidMoves(game.o_b2.row, game.o_b2.column);
@@ -290,7 +316,7 @@ class GameBoard {
         }
     }
 
-    checkValidMoves(row: number, col: number){
+    checkValidMoves(row: number, col: number, moveSet: boolean = false){
         // Check if the builder they chose has valid moves
         // Still need to check if builder can build after moving
         let validMoves = [[false,false,false],[false,false,false],[false,false,false]];
@@ -358,14 +384,24 @@ class GameBoard {
             }
         }
         // Exited valid move check
+        let tally: number = 0;
         for (let x =0; x < 3; x++) {
             for (let y=0; y < 3; y++) {
                 if (validMoves[x][y]) {
-                    return true;
+                    tally += 1;
                 }
             }
         }
-        return false;
+
+        if (moveSet) {
+            return validMoves;
+        }
+
+        if (tally > 0) {
+            return true
+        } else {
+            return false;
+        }
     }
 
     moveBuilder(row: number, col: number) {
@@ -528,6 +564,8 @@ const step = [
 ];
 let from_row: number;
 let from_column: number;
+let from_class: any;
+let validMoves: any = [];
 let to_row: number;
 let to_column: number;
 let build_row: number;

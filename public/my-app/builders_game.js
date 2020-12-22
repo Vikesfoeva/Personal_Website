@@ -1,9 +1,11 @@
 // Author: Brandon Lenz
 // Adapted from final project in CS 161 with permision from Professor Tim Alcon
-// need to check for valid spots to build after moving
-// meed tp fix the logic for checking if a player no longer has any valid moves
+// ideas to improve
+// Highlighting valid moves, prettier board, computer AI, play vs human on local, play vs human elsewhere
+// Undo feature, choosing builder a or builder b aka not being locked in
 function squareClick(row_pick, column_pick) {
     var div = document.getElementById("piece_".concat(String(row_pick), String(column_pick)));
+    var divBox = document.getElementById("box_".concat(String(row_pick), String(column_pick)));
     if (game.turnPhase == 0) {
         game.initialPlacement(row_pick, column_pick, div);
     }
@@ -19,6 +21,23 @@ function squareClick(row_pick, column_pick) {
             from_row = row_pick;
             from_column = column_pick;
             game.turnPhase += 1;
+            from_class = divBox.className;
+            divBox.className = "fromCell";
+            // Add logic for highlighting cells
+            var validMovesList = game.checkValidMoves(row_pick, column_pick, true);
+            validMoves.length = 0;
+            for (var i = 0; i < 3; i++) {
+                for (var j = 0; j < 3; j++) {
+                    if (validMovesList[i][j]) {
+                        var row_ref = row_pick + i - 1;
+                        var col_ref = column_pick + j - 1;
+                        var divMoves = document.getElementById("box_".concat(String(row_ref), String(col_ref)));
+                        validMoves.push([row_ref, col_ref, divMoves.className]);
+                        divMoves.className = "highlighted";
+                    }
+                }
+            }
+            console.log(validMoves);
         }
         else {
             document.getElementById('error').innerHTML = "Please choose a builder";
@@ -40,6 +59,11 @@ function squareClick(row_pick, column_pick) {
             else {
                 document.getElementById('step').innerHTML = step[7];
             }
+            // Sets the cells back to their old color
+            document.getElementById("box_".concat(String(from_row), String(from_column))).className = from_class;
+            validMoves.forEach(function (element) {
+                document.getElementById("box_".concat(String(element[0]), String(element[1]))).className = element[2];
+            });
             clearError();
             if (game.x_turn) {
                 if (from_row == game.x_b1.row && from_column == game.x_b1.column) {
@@ -281,7 +305,8 @@ var GameBoard = /** @class */ (function () {
             return true;
         }
     };
-    GameBoard.prototype.checkValidMoves = function (row, col) {
+    GameBoard.prototype.checkValidMoves = function (row, col, moveSet) {
+        if (moveSet === void 0) { moveSet = false; }
         // Check if the builder they chose has valid moves
         // Still need to check if builder can build after moving
         var validMoves = [[false, false, false], [false, false, false], [false, false, false]];
@@ -337,14 +362,23 @@ var GameBoard = /** @class */ (function () {
             }
         }
         // Exited valid move check
+        var tally = 0;
         for (var x = 0; x < 3; x++) {
             for (var y = 0; y < 3; y++) {
                 if (validMoves[x][y]) {
-                    return true;
+                    tally += 1;
                 }
             }
         }
-        return false;
+        if (moveSet) {
+            return validMoves;
+        }
+        if (tally > 0) {
+            return true;
+        }
+        else {
+            return false;
+        }
     };
     GameBoard.prototype.moveBuilder = function (row, col) {
         if (game.isOccupied(row, col)) {
@@ -488,6 +522,8 @@ var step = [
 ];
 var from_row;
 var from_column;
+var from_class;
+var validMoves = [];
 var to_row;
 var to_column;
 var build_row;

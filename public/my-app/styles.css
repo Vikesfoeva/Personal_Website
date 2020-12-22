@@ -56,3 +56,13 @@ border: 2px solid black;
     padding: 5px;
     overflow: auto;
 }
+
+.highlighted{
+    background-color: yellow;
+    border: 2px solid black;
+}
+
+.fromCell{
+    background-color: blue;
+    border: 2px solid black;
+}
