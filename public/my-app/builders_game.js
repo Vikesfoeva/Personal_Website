@@ -1,36 +1,40 @@
 // Author: Brandon Lenz
 // Adapted from final project in CS 161 with permision from Professor Tim Alcon
 // ideas to improve
-// Highlighting valid moves, prettier board, computer AI, play vs human on local, play vs human elsewhere
+// prettier board, computer AI, play vs human on local, play vs human elsewhere
 // Undo feature, choosing builder a or builder b aka not being locked in
 // seems to be a bug where victory is not always properly checked
+// Feature Requests
+// Highlight the most recent move
 function squareClick(row_pick, column_pick) {
     var div = document.getElementById("piece_".concat(String(row_pick), String(column_pick)));
     var divBox = document.getElementById("box_".concat(String(row_pick), String(column_pick)));
-    if (game.turnPhase == 0) {
+    if (game.turnPhase === 0) {
         game.initialPlacement(row_pick, column_pick, div);
     }
-    else if (game.turnPhase == 1) {
+    else if (game.turnPhase === 1) {
+        from_row = row_pick;
+        from_column = column_pick;
         game.turnPhaseOne(row_pick, column_pick, divBox);
     }
-    else if (game.turnPhase == 2) {
+    else if (game.turnPhase === 2) {
         // If the player selects their other builder, re-route the logic to that builder
         if (game.x_turn) {
-            if (row_pick == game.x_b1.row && column_pick == game.x_b1.column) {
+            if (row_pick === game.x_b1.row && column_pick === game.x_b1.column) {
                 game.changePhaseOne(row_pick, column_pick, divBox);
                 return;
             }
-            else if (row_pick == game.x_b2.row && column_pick == game.x_b2.column) {
+            else if (row_pick === game.x_b2.row && column_pick === game.x_b2.column) {
                 game.changePhaseOne(row_pick, column_pick, divBox);
                 return;
             }
         }
         else {
-            if (row_pick == game.o_b1.row && column_pick == game.o_b1.column) {
+            if (row_pick === game.o_b1.row && column_pick === game.o_b1.column) {
                 game.changePhaseOne(row_pick, column_pick, divBox);
                 return;
             }
-            else if (row_pick == game.o_b2.row && column_pick == game.o_b2.column) {
+            else if (row_pick === game.o_b2.row && column_pick === game.o_b2.column) {
                 game.changePhaseOne(row_pick, column_pick, divBox);
                 return;
             }
@@ -69,15 +73,14 @@ function squareClick(row_pick, column_pick) {
                     }
                 }
             }
-            console.log(validBuilds);
             clearError();
             if (game.x_turn) {
-                if (from_row == game.x_b1.row && from_column == game.x_b1.column) {
+                if (from_row === game.x_b1.row && from_column === game.x_b1.column) {
                     game.x_b1.row = to_row;
                     game.x_b1.column = to_column;
                     game.x_b1.height = game.board[to_row][to_column];
                 }
-                else if (from_row == game.x_b2.row && from_column == game.x_b2.column) {
+                else if (from_row === game.x_b2.row && from_column === game.x_b2.column) {
                     game.x_b2.row = to_row;
                     game.x_b2.column = to_column;
                     game.x_b2.height = game.board[to_row][to_column];
@@ -87,12 +90,12 @@ function squareClick(row_pick, column_pick) {
                 }
             }
             else if (!game.x_turn) {
-                if (from_row == game.o_b1.row && from_column == game.o_b1.column) {
+                if (from_row === game.o_b1.row && from_column === game.o_b1.column) {
                     game.o_b1.row = to_row;
                     game.o_b1.column = to_column;
                     game.o_b1.height = game.board[to_row][to_column];
                 }
-                else if (from_row == game.o_b2.row && from_column == game.o_b2.column) {
+                else if (from_row === game.o_b2.row && from_column === game.o_b2.column) {
                     game.o_b2.row = to_row;
                     game.o_b2.column = to_column;
                     game.o_b2.height = game.board[to_row][to_column];
@@ -109,35 +112,33 @@ function squareClick(row_pick, column_pick) {
             document.getElementById('error').innerHTML = "Please select a valid space to move to";
         }
     }
-    else if (game.turnPhase == 3) {
+    else if (game.turnPhase === 3) {
         if (game.buildSquare(row_pick, column_pick)) {
             game.board[row_pick][column_pick] += 1;
             var buildDiv = document.getElementById("height_".concat(String(row_pick), String(column_pick)));
             var boxDiv = document.getElementById("box_".concat(String(row_pick), String(column_pick)));
             buildDiv.innerHTML = String(game.board[row_pick][column_pick]);
-            if (game.board[row_pick][column_pick] == 4) {
+            if (game.board[row_pick][column_pick] === 4) {
                 boxDiv.style = "background-color: black; color: white;";
             }
             validBuilds.forEach(function (element) {
                 document.getElementById("box_".concat(String(element[0]), String(element[1]))).className = element[2];
             });
             clearError();
-            // Straight up victory check
-            if (game.x_b1.height == 3 || game.x_b2.height == 3) {
+            // Check for victory by condition builder on height 3
+            if (game.x_b1.height === 3 || game.x_b2.height === 3) {
                 document.getElementById('step').innerHTML = step[8];
-                console.log('I hit');
                 game.turnPhase = 99;
                 return true;
             }
-            else if (game.o_b1.height == 3 || game.o_b2.height == 3) {
+            else if (game.o_b1.height === 3 || game.o_b2.height === 3) {
                 document.getElementById('step').innerHTML = step[9];
-                console.log('I hit');
                 game.turnPhase = 99;
                 return true;
             }
+            // Check for victory by opponent having no valid moves
             var b1 = void 0;
             var b2 = void 0;
-            // Victory Check
             b1 = game.checkValidMoves(game.o_b1.row, game.o_b1.column);
             b2 = game.checkValidMoves(game.o_b2.row, game.o_b2.column);
             if ((!b1 && !b2)) {
@@ -152,6 +153,42 @@ function squareClick(row_pick, column_pick) {
                 game.turnPhase = 99;
                 return true;
             }
+            var divMoveFrom = document.getElementById("box_".concat(String(from_row), String(from_column)));
+            var divMoveTo = document.getElementById("box_".concat(String(to_row), String(to_column)));
+            var divBuild = document.getElementById("box_".concat(String(row_pick), String(column_pick)));
+            var divMoveFromClass = void 0;
+            var divMoveToClass = void 0;
+            var divBuildClass = void 0;
+            if ((from_row + from_column) % 2 === 0) {
+                divMoveFromClass = 'boxA';
+            }
+            else {
+                divMoveFromClass = 'boxB';
+            }
+            if ((to_row + to_column) % 2 === 0) {
+                divMoveToClass = 'boxA';
+            }
+            else {
+                divMoveToClass = 'boxB';
+            }
+            if ((row_pick + column_pick) % 2 === 0) {
+                divBuildClass = 'boxA';
+            }
+            else {
+                divBuildClass = 'boxB';
+            }
+            game.record.push([from_row, from_column, to_row, to_column, row_pick, column_pick, game.x_turn, divMoveFromClass, divMoveToClass, divBuildClass]);
+            // Reset the last one
+            var lastMove = game.record.length - 2;
+            var moveArray = game.record[lastMove];
+            if (lastMove > -1) {
+                document.getElementById('box_'.concat(String(moveArray[0]), String(moveArray[1]))).className = moveArray[7];
+                document.getElementById('box_'.concat(String(moveArray[2]), String(moveArray[3]))).className = moveArray[8];
+                document.getElementById('box_'.concat(String(moveArray[4]), String(moveArray[5]))).className = moveArray[9];
+            }
+            divMoveFrom.className = 'recentMove';
+            divMoveTo.className = 'recentMove';
+            divBuild.className = 'recentBuild';
             game.changeTurn();
             game.turnPhase = 1;
             if (game.x_turn) {
@@ -160,7 +197,6 @@ function squareClick(row_pick, column_pick) {
             else {
                 document.getElementById('step').innerHTML = step[5];
             }
-            game.record.push([from_row, from_column, to_row, to_column, row_pick, column_pick, game.x_turn]);
         }
     }
 }
@@ -187,6 +223,8 @@ var GameBoard = /** @class */ (function () {
         this.record = [];
     }
     GameBoard.prototype.changePhaseOne = function (row_pick, column_pick, divBox) {
+        from_row = row_pick;
+        from_column = column_pick;
         document.getElementById("box_".concat(String(from_row), String(from_column))).className = from_class;
         validMoves.forEach(function (element) {
             document.getElementById("box_".concat(String(element[0]), String(element[1]))).className = element[2];
@@ -202,8 +240,6 @@ var GameBoard = /** @class */ (function () {
                 document.getElementById('step').innerHTML = step[6];
             }
             clearError();
-            from_row = row_pick;
-            from_column = column_pick;
             game.turnPhase = 2;
             from_class = divBox.className;
             divBox.className = "fromCell";
@@ -235,7 +271,7 @@ var GameBoard = /** @class */ (function () {
             return false;
         }
         if (this.x_turn) {
-            if (this.x_b1.height == 99) {
+            if (this.x_b1.height === 99) {
                 this.x_b1.row = row;
                 this.x_b1.column = col;
                 this.x_b1.height = 0;
@@ -253,7 +289,7 @@ var GameBoard = /** @class */ (function () {
             }
         }
         else if (!this.x_turn) {
-            if (this.o_b1.height == 99) {
+            if (this.o_b1.height === 99) {
                 this.o_b1.row = row;
                 this.o_b1.column = col;
                 this.o_b1.height = 0;
@@ -287,16 +323,16 @@ var GameBoard = /** @class */ (function () {
     };
     GameBoard.prototype.isOccupied = function (row, column) {
         // returns false if space is free (not occupied)
-        if (row == this.x_b1.row && column == this.x_b1.column) {
+        if (row === this.x_b1.row && column === this.x_b1.column) {
             return true;
         }
-        else if (row == this.x_b2.row && column == this.x_b2.column) {
+        else if (row === this.x_b2.row && column === this.x_b2.column) {
             return true;
         }
-        else if (row == this.o_b1.row && column == this.o_b1.column) {
+        else if (row === this.o_b1.row && column === this.o_b1.column) {
             return true;
         }
-        else if (row == this.o_b2.row && column == this.o_b2.column) {
+        else if (row === this.o_b2.row && column === this.o_b2.column) {
             return true;
         }
         return false;
@@ -329,10 +365,10 @@ var GameBoard = /** @class */ (function () {
     GameBoard.prototype.clickMove = function (row, col) {
         // Returns true if the user successfully selects a builder who has moves
         if (game.x_turn) {
-            if (row == game.x_b1.row && col == game.x_b1.column) {
+            if (row === game.x_b1.row && col === game.x_b1.column) {
                 // 
             }
-            else if (row == game.x_b2.row && col == game.x_b2.column) {
+            else if (row === game.x_b2.row && col === game.x_b2.column) {
                 //
             }
             else {
@@ -340,10 +376,10 @@ var GameBoard = /** @class */ (function () {
             }
         }
         else if (!game.x_turn) {
-            if (row == game.o_b1.row && col == game.o_b1.column) {
+            if (row === game.o_b1.row && col === game.o_b1.column) {
                 //
             }
-            else if (row == game.o_b2.row && col == game.o_b2.column) {
+            else if (row === game.o_b2.row && col === game.o_b2.column) {
                 //
             }
             else {
@@ -415,10 +451,10 @@ var GameBoard = /** @class */ (function () {
             for (var m = -1; m < 2; m++) {
                 var build_row_check = row + k;
                 var build_col_check = col + m;
-                if (k == 0 && m == 0) {
+                if (k === 0 && m === 0) {
                     continue;
                 }
-                if (build_row_check == from_row && build_col_check == from_column) {
+                if (build_row_check === from_row && build_col_check === from_column) {
                     validBuilds[k + 1][m + 1] = true;
                     continue;
                 }
@@ -433,7 +469,7 @@ var GameBoard = /** @class */ (function () {
                         continue;
                     }
                 }
-                if (game.board[build_row_check][build_col_check] == 4) {
+                if (game.board[build_row_check][build_col_check] === 4) {
                     continue;
                 }
                 validBuilds[k + 1][m + 1] = true;
@@ -444,7 +480,6 @@ var GameBoard = /** @class */ (function () {
     GameBoard.prototype.moveBuilder = function (row, col) {
         if (game.isOccupied(row, col)) {
             printError("Somone is already there!");
-            console.log("false 1");
             return false;
         }
         if ((this.board[row][col] - this.board[from_row][from_column]) > 1) {
@@ -461,7 +496,6 @@ var GameBoard = /** @class */ (function () {
     };
     GameBoard.prototype.buildSquare = function (row, col) {
         if (game.isOccupied(row, col)) {
-            console.log("Someone is there!");
             printError("Someone is there!");
             return false;
         }
@@ -471,93 +505,12 @@ var GameBoard = /** @class */ (function () {
             printError("That is not adjacent!");
             return false;
         }
-        if (game.board[row][col] == 4) {
+        if (game.board[row][col] === 4) {
             printFalse("Cannot build higher than 4");
             printError("Cannot build higher than 4");
             return false;
         }
         return true;
-    };
-    GameBoard.prototype.makeMove = function (fromRow, fromColumn, toRow, toColumn, buildRow, buildColumn) {
-        // This is the function for making a move from console
-        if (!this.onBoard(fromRow, fromColumn) || !this.onBoard(toRow, toColumn) || !this.onBoard(buildRow, buildColumn)) {
-            printFalse("Not on board");
-            return false;
-        }
-        if (this.state != "In Progress") {
-            printFalse("Game is no longer going on");
-            return false;
-        }
-        if (this.isOccupied(toRow, toColumn)) {
-            printFalse("Someone is already there!");
-            return false;
-        }
-        // test this, the logic feels off
-        if (this.isOccupied(buildRow, buildColumn)) {
-            // it's ok to build where you just left
-            if (fromRow != buildRow && fromColumn != buildColumn) {
-                printFalse("Someone is there, no building!");
-                return false;
-            }
-        }
-        if (toRow == buildRow && toColumn == buildColumn) {
-            printFalse("You are about to move there!");
-            return false;
-        }
-        if ((this.board[toRow][toColumn] - this.board[fromRow][fromColumn]) > 1) {
-            printFalse("Can't jump that high!");
-            return false;
-        }
-        if (!this.isAdjacent(fromRow, fromColumn, toRow, toColumn)) {
-            printFalse("You need to move to an adjacent square");
-            return false;
-        }
-        if (!this.isAdjacent(toRow, toColumn, buildRow, buildColumn)) {
-            printFalse("You need to move to an adjacent square");
-            return false;
-        }
-        if (this.board[buildRow][buildColumn] > 4) {
-            printFalse("Can't build that high");
-            return false;
-        }
-        if (this.x_turn) {
-            if (fromRow == this.x_b1.row && fromColumn == this.x_b1.column) {
-                this.x_b1.row = toRow;
-                this.x_b1.column = toColumn;
-                this.x_b1.height = this.board[toRow][toColumn];
-            }
-            else if (fromRow == this.x_b2.row && fromColumn == this.x_b2.column) {
-                this.x_b2.row = toRow;
-                this.x_b2.column = toColumn;
-                this.x_b2.height = this.board[toRow][toColumn];
-            }
-            else {
-                printFalse("It was x's turn but a builder was not properly referenced");
-                return false;
-            }
-        }
-        else if (!this.x_turn) {
-            if (fromRow == this.o_b1.row && fromColumn == this.o_b1.column) {
-                this.o_b1.row = toRow;
-                this.o_b1.column = toColumn;
-                this.o_b1.height = this.board[toRow][toColumn];
-            }
-            else if (fromRow == this.o_b2.row && fromColumn == this.o_b2.column) {
-                this.o_b2.row = toRow;
-                this.o_b2.column = toColumn;
-                this.o_b2.height = this.board[toRow][toColumn];
-            }
-            else {
-                printFalse("It was x's turn but a builder was not properly referenced");
-                return false;
-            }
-        }
-        else {
-            printFalse("Somehow you made something else go wrong");
-            return false;
-        }
-        this.board[buildRow][buildColumn] += 1;
-        this.changeTurn();
     };
     return GameBoard;
 }());
@@ -591,3 +544,79 @@ var to_column;
 var validBuilds = [];
 var build_row;
 var build_column;
+// Legacy method that should be able to be removed
+// makeMove(fromRow: number, fromColumn: number, toRow: number, toColumn: number, buildRow: number, buildColumn: number){
+//     // This is the function for making a move from console
+//     if (!this.onBoard(fromRow, fromColumn) || !this.onBoard(toRow, toColumn) || !this.onBoard(buildRow, buildColumn)) {
+//         printFalse(`Not on board`);
+//         return false;
+//     }
+//     if (this.state != `In Progress`) {
+//         printFalse(`Game is no longer going on`);
+//         return false;
+//     }
+//     if (this.isOccupied(toRow, toColumn)) {
+//         printFalse(`Someone is already there!`);
+//         return false;
+//     }
+//     // test this, the logic feels off
+//     if (this.isOccupied(buildRow, buildColumn)) {
+//         // it's ok to build where you just left
+//         if (fromRow != buildRow && fromColumn != buildColumn){
+//             printFalse(`Someone is there, no building!`)
+//             return false;
+//         }
+//     }
+//     if (toRow === buildRow && toColumn === buildColumn) {
+//         printFalse(`You are about to move there!`);
+//         return false;
+//     }
+//     if ((this.board[toRow][toColumn] - this.board[fromRow][fromColumn]) > 1){
+//         printFalse(`Can't jump that high!`);
+//         return false;
+//     }
+//     if (!this.isAdjacent(fromRow, fromColumn, toRow, toColumn)){
+//         printFalse(`You need to move to an adjacent square`);
+//         return false;
+//     }
+//     if (!this.isAdjacent(toRow, toColumn, buildRow, buildColumn)){
+//         printFalse(`You need to move to an adjacent square`);
+//         return false;
+//     }
+//     if (this.board[buildRow][buildColumn] > 4) {
+//         printFalse(`Can't build that high`);
+//         return false;
+//     }
+//     if (this.x_turn) {
+//         if (fromRow === this.x_b1.row && fromColumn === this.x_b1.column) {
+//             this.x_b1.row = toRow;
+//             this.x_b1.column = toColumn;
+//             this.x_b1.height = this.board[toRow][toColumn];
+//         } else if(fromRow === this.x_b2.row && fromColumn === this.x_b2.column) {
+//             this.x_b2.row = toRow;
+//             this.x_b2.column = toColumn;
+//             this.x_b2.height = this.board[toRow][toColumn];
+//         } else {
+//             printFalse(`It was x's turn but a builder was not properly referenced`);
+//             return false;
+//         }
+//     } else if(!this.x_turn){
+//         if (fromRow === this.o_b1.row && fromColumn === this.o_b1.column) {
+//             this.o_b1.row = toRow;
+//             this.o_b1.column = toColumn;
+//             this.o_b1.height = this.board[toRow][toColumn];
+//         } else if(fromRow === this.o_b2.row && fromColumn === this.o_b2.column) {
+//             this.o_b2.row = toRow;
+//             this.o_b2.column = toColumn;
+//             this.o_b2.height = this.board[toRow][toColumn];
+//         } else {
+//             printFalse(`It was x's turn but a builder was not properly referenced`);
+//             return false;
+//         }
+//     } else {
+//         printFalse(`Somehow you made something else go wrong`)
+//         return false;
+//     }
+//     this.board[buildRow][buildColumn] += 1;
+//     this.changeTurn();
+// }

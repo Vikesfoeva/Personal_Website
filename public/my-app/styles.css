@@ -58,7 +58,7 @@ border: 2px solid black;
 }
 
 .highlightedMove{
-    background-color: #00ff00;
+    background-color: #4BB543;
     border: 2px solid black;
 }
 
@@ -69,5 +69,15 @@ border: 2px solid black;
 
 .fromCell{
     background-color: blue;
+    border: 2px solid black;
+}
+
+.recentMove{
+    background-color: purple;
+    border: 2px solid black;
+}
+
+.recentBuild{
+    background-color: #b19cd9;
     border: 2px solid black;
 }
