@@ -6,6 +6,11 @@
 // Undo feature, choosing builder a or builder b aka not being locked in
 // seems to be a bug where victory is not always properly checked
 
+// Feature Requests
+// Highlight the most recent move
+// Brady says make green the valid move spaces to move to
+// 
+
 function squareClick(row_pick: number, column_pick: number){
     const div: any = document.getElementById(`piece_`.concat(String(row_pick),String(column_pick)));
     const divBox: any = document.getElementById(`box_`.concat(String(row_pick),String(column_pick)))
