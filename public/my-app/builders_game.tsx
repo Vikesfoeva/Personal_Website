@@ -5,6 +5,56 @@
 // prettier board, computer AI, play vs human on local, play vs human elsewhere
 // Undo feature, choosing builder a or builder b aka not being locked in
 
+function undoMostRecentMove(){
+
+}
+
+function reset(){
+    var answer = window.confirm("Do you want to reset the game and start a new one?");
+    if (answer) {
+        game.x_b1.row = 99;
+        game.x_b1.column = 99;
+        game.x_b1.height = 99;
+        game.x_b2.row = 99;
+        game.x_b2.column = 99;
+        game.x_b2.height = 99;
+        game.o_b1.row = 99;
+        game.o_b1.column = 99;
+        game.o_b1.height = 99;
+        game.o_b2.row = 99;
+        game.o_b2.column = 99;
+        game.o_b2.height = 99;
+        game.x_turn = true;
+        game.turnPhase = 0;
+        document.getElementById(`step`).innerHTML = step[0];
+        clearError();
+        game.record.length = 0;
+
+        for (let i = 0; i < 5; i++) {
+            for (let j = 0; j < 5; j++){
+                let divBox: any = document.getElementById(`box_`.concat(String(i),String(j)));
+                let divPiece: any = document.getElementById(`piece_`.concat(String(i),String(j)));
+                let divHeight: any = document.getElementById(`height_`.concat(String(i),String(j)));
+                divPiece.innerHTML = '';
+                divHeight.innerHTML = '0';
+                game.board[i][j] = 0;
+                if((i+j) % 2 === 0) {
+                    divBox.className = "boxA";
+                } else {
+                    divBox.className = "boxB";
+                }
+            }
+        }
+    }
+    else {
+        //some code
+    }
+}
+
+function moveHistory(){
+    
+}
+
 function squareClick(row_pick: number, column_pick: number){
     const div: any = document.getElementById(`piece_`.concat(String(row_pick),String(column_pick)));
     const divBox: any = document.getElementById(`box_`.concat(String(row_pick),String(column_pick)))
@@ -40,7 +90,7 @@ function squareClick(row_pick: number, column_pick: number){
             let divFrom: any = document.getElementById(`piece_`.concat(String(from_row), String(from_column)));
             let divTo: any = document.getElementById(`piece_`.concat(String(row_pick), String(column_pick)));
             divTo.innerHTML = divFrom.innerHTML;
-            divFrom.innerHTML = ``;
+            divFrom.innerHTML = '';
             to_row = row_pick;
             to_column = column_pick;
             game.turnPhase = 3;

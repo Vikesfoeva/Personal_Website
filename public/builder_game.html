@@ -53,6 +53,9 @@
         <p">
             <h2 id="step" style="padding: 20px;">Black, please place your builders</h2>
             <h4 id ="error" style="padding: 20px;"></h4>
+            <button onclick="undoMostRecentMove()" id="undo">Undo</button>
+            <button onclick="reset()" id="reset">New Game</button>
+            <button onclick="moveHistory()" id="history">Move History</button>
         </p>
         <div class = "game-board">
             <div class="boxA" id="box_00" onclick="squareClick(0, 0)"><div id="piece_00" class="piece"></div><div id="height_00" class="height">0</div></div>

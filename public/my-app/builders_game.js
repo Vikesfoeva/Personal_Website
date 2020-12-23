@@ -3,9 +3,51 @@
 // ideas to improve
 // prettier board, computer AI, play vs human on local, play vs human elsewhere
 // Undo feature, choosing builder a or builder b aka not being locked in
-// seems to be a bug where victory is not always properly checked
-// Feature Requests
-// Highlight the most recent move
+function undoMostRecentMove() {
+}
+function reset() {
+    var answer = window.confirm("Do you want to reset the game and start a new one?");
+    if (answer) {
+        game.x_b1.row = 99;
+        game.x_b1.column = 99;
+        game.x_b1.height = 99;
+        game.x_b2.row = 99;
+        game.x_b2.column = 99;
+        game.x_b2.height = 99;
+        game.o_b1.row = 99;
+        game.o_b1.column = 99;
+        game.o_b1.height = 99;
+        game.o_b2.row = 99;
+        game.o_b2.column = 99;
+        game.o_b2.height = 99;
+        game.x_turn = true;
+        game.turnPhase = 0;
+        document.getElementById("step").innerHTML = step[0];
+        clearError();
+        game.record.length = 0;
+        for (var i = 0; i < 5; i++) {
+            for (var j = 0; j < 5; j++) {
+                var divBox = document.getElementById("box_".concat(String(i), String(j)));
+                var divPiece = document.getElementById("piece_".concat(String(i), String(j)));
+                var divHeight = document.getElementById("height_".concat(String(i), String(j)));
+                divPiece.innerHTML = '';
+                divHeight.innerHTML = '0';
+                game.board[i][j] = 0;
+                if ((i + j) % 2 === 0) {
+                    divBox.className = "boxA";
+                }
+                else {
+                    divBox.className = "boxB";
+                }
+            }
+        }
+    }
+    else {
+        //some code
+    }
+}
+function moveHistory() {
+}
 function squareClick(row_pick, column_pick) {
     var div = document.getElementById("piece_".concat(String(row_pick), String(column_pick)));
     var divBox = document.getElementById("box_".concat(String(row_pick), String(column_pick)));
@@ -44,7 +86,7 @@ function squareClick(row_pick, column_pick) {
             var divFrom = document.getElementById("piece_".concat(String(from_row), String(from_column)));
             var divTo = document.getElementById("piece_".concat(String(row_pick), String(column_pick)));
             divTo.innerHTML = divFrom.innerHTML;
-            divFrom.innerHTML = "";
+            divFrom.innerHTML = '';
             to_row = row_pick;
             to_column = column_pick;
             game.turnPhase = 3;
