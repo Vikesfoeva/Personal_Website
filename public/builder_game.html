@@ -23,7 +23,7 @@
         <div>
             <h1>Instructions</h1>
             <p>
-                The game is played on 5x5 board.  Each square on the board has a height that starts at 0, but cannot ever exceed 4.  One player is 'x' and the other is 'o'.  Player x will place their two builders first, and then player two will
+                The game is played on 5x5 board.  Each square on the board has a height that starts at 0, but cannot ever exceed 4.  One player is black and the other is white.  Player x will place their two builders first, and then player two will
                 place both of theirs.  No two builders may occupy the space at the same time.  If any builder occupies a square, that square cannot be built on.
                 <br>
                 <br>
@@ -44,8 +44,8 @@
                 A player wins when:
                 <ol>
                     <li>One of a players builders are on a square of height 3 or: </li>
-                    <li>At the completion of a players turn, their opponent has no valid moves.  For example, if 'x' has just moved and on their turn 'o'
-                        would have no valid moves, then 'x' wins.
+                    <li>At the completion of a players turn, their opponent has no valid moves.  For example, if black has just moved and on their turn white
+                        would have no valid moves, then black wins.
                     </li>
                 </ol>
             </p>
@@ -53,9 +53,9 @@
         <p">
             <h2 id="step" style="padding: 20px;">Black, please place your builders</h2>
             <h4 id ="error" style="padding: 20px;"></h4>
-            <button onclick="undoMostRecentMove()" id="undo">Undo</button>
-            <button onclick="reset()" id="reset">New Game</button>
-            <button onclick="moveHistory()" id="history">Move History</button>
+            <button onclick="undoMostRecentMove()" id="undo" class="button">Undo</button>
+            <button onclick="reset()" id="reset" class="button">New Game</button>
+            <button onclick="moveHistory()" id="history" class="button">Move History</button>
         </p>
         <div class = "game-board">
             <div class="boxA" id="box_00" onclick="squareClick(0, 0)"><div id="piece_00" class="piece"></div><div id="height_00" class="height">0</div></div>

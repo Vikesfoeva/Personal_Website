@@ -161,9 +161,7 @@ function squareClick(row_pick: number, column_pick: number){
             const buildDiv: any = document.getElementById(`height_`.concat(String(row_pick), String(column_pick)));
             const boxDiv: any = document.getElementById(`box_`.concat(String(row_pick), String(column_pick)));
             buildDiv.innerHTML = String(game.board[row_pick][column_pick]);
-            if (game.board[row_pick][column_pick] === 4) {
-                boxDiv.style = "background-color: black; color: white;";
-            }
+
 
             validBuilds.forEach(element => {
                 document.getElementById(`box_`.concat(String(element[0]), String(element[1]))).className = element[2];
@@ -240,6 +238,12 @@ function squareClick(row_pick: number, column_pick: number){
             divMoveFrom.className = 'recentMove';
             divMoveTo.className = 'recentMove';
             divBuild.className = 'recentBuild';
+
+            if (game.board[row_pick][column_pick] === 4) {
+                boxDiv.className = "maxHeight";
+                boxDiv.innerHTML = '';
+                boxDiv.innerHTML = '4';
+            }
 
             game.changeTurn();
             game.turnPhase = 1;

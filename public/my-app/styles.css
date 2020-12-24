@@ -34,13 +34,23 @@ h4{
 }
 
 .boxA {
-background-color: #f77575;
-border: 2px solid black;
+    border: 2px solid black;
+    border-color: black;
+    box-shadow: 0 0 80px 80px #f77575 inset, 0 0 0 0 #000000;
+    transition: all 150ms;
+}
+.boxA:hover {
+    box-shadow: 0 0 80px 0 #f77575 inset, 0 0 10px 4px #f77575;
 }
 
 .boxB {
-    background-color: #75b8f7;
     border: 2px solid black;
+    border-color: black;
+    box-shadow: 0 0 80px 80px #75b8f7 inset, 0 0 0 0 #000000;
+    transition: all 150ms;
+}
+.boxB:hover {
+    box-shadow: 0 0 80px 0 #75b8f7 inset, 0 0 10px 4px #75b8f7;
 }
 
 .height {
@@ -57,27 +67,81 @@ border: 2px solid black;
     overflow: auto;
 }
 
-.highlightedMove{
-    background-color: #4BB543;
+.highlightedMove {
     border: 2px solid black;
+    border-color: black;
+    box-shadow: 0 0 80px 80px #4BB543 inset, 0 0 0 0 #000000;
+    transition: all 150ms;
+}
+.highlightedMove:hover {
+    box-shadow: 0 0 80px 0 #4BB543 inset, 0 0 10px 4px #4BB543;
 }
 
-.highlightedBuild{
-    background-color: cyan;
+.highlightedBuild {
     border: 2px solid black;
+    border-color:black;
+    box-shadow: 0 0 80px 80px cyan inset, 0 0 0 0 #000000;
+    transition: all 150ms;
+}
+.highlightedBuild:hover {
+    box-shadow: 0 0 80px 0 cyan inset, 0 0 10px 4px cyan;
 }
 
-.fromCell{
-    background-color: blue;
+.fromCell {
     border: 2px solid black;
+    border-color:black;
+    box-shadow: 0 0 80px 80px blue inset, 0 0 0 0 #000000;
+    transition: all 150ms;
+}
+.fromCell:hover {
+    box-shadow: 0 0 80px 0 blue inset, 0 0 10px 4px blue;
 }
 
-.recentMove{
-    background-color: purple;
+.recentMove {
     border: 2px solid black;
+    border-color:black;
+    box-shadow: 0 0 80px 80px purple inset, 0 0 0 0 #000000;
+    transition: all 150ms;
+}
+.recentMove:hover {
+    box-shadow: 0 0 80px 0 purple inset, 0 0 10px 4px purple;
 }
 
-.recentBuild{
-    background-color: #b19cd9;
+.recentBuild {
     border: 2px solid black;
+    border-color:black;
+    box-shadow: 0 0 80px 80px #b19cd9 inset, 0 0 0 0 #000000;
+    transition: all 150ms;
 }
+.recentBuild:hover {
+    box-shadow: 0 0 80px 0 #b19cd9 inset, 0 0 10px 4px #b19cd9;
+}
+
+.button {
+    height: 50px;
+    width: max-content;
+    padding: 10px;
+    font-size: 16px;
+    text-align: center;
+    border-color: #3498db;
+    color: #fff;
+    box-shadow: 0 0 40px 40px #3498db inset, 0 0 0 0 #000000;
+    transition: all 150ms;
+    border-radius: 10px;
+  }
+  .button:hover {
+      box-shadow: 0 0 10px 0 #3498db inset, 0 0 10px 4px #3498db;
+      color: gray;
+  }
+
+  .maxHeight {
+    border: 2px solid black;
+    border-color:black;
+    box-shadow: 0 0 80px 80px black inset, 0 0 0 0 #000000;
+    transition: all 1000ms;
+    color: white;
+    font-size: 28px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
