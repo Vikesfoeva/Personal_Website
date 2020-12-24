@@ -515,8 +515,13 @@ function reset() {
                 var divBox = document.getElementById("box_".concat(String(i), String(j)));
                 var divPiece = document.getElementById("piece_".concat(String(i), String(j)));
                 var divHeight = document.getElementById("height_".concat(String(i), String(j)));
-                divPiece.innerHTML = '';
-                divHeight.innerHTML = '0';
+                if (divHeight === null) {
+                    divBox.innerHTML = "<div id=\"piece_" + i + j + "\" class=\"piece\"></div><div id=\"height_" + i + j + "\" class=\"height\">0</div>";
+                }
+                else {
+                    divHeight.innerHTML = '0';
+                    divPiece.innerHTML = '';
+                }
                 game.board[i][j] = 0;
                 if ((i + j) % 2 === 0) {
                     divBox.className = "boxA";
