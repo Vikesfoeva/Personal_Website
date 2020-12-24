@@ -5,6 +5,7 @@
 // Undo feature
 // Only highlight valid clicks
 function undoMostRecentMove() {
+    window.alert("Lol I don't do anything yet");
 }
 function reset() {
     var answer = window.confirm("Do you want to reset the game and start a new one?");
@@ -48,6 +49,7 @@ function reset() {
     }
 }
 function moveHistory() {
+    window.alert("Lol I don't do anything yet");
 }
 function squareClick(row_pick, column_pick) {
     var div = document.getElementById("piece_".concat(String(row_pick), String(column_pick)));

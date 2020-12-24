@@ -7,7 +7,7 @@
 // Only highlight valid clicks
 
 function undoMostRecentMove(){
-
+    window.alert("Lol I don't do anything yet");
 }
 
 function reset(){
@@ -53,7 +53,7 @@ function reset(){
 }
 
 function moveHistory(){
-    
+    window.alert("Lol I don't do anything yet");
 }
 
 function squareClick(row_pick: number, column_pick: number){
