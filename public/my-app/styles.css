@@ -2,35 +2,34 @@
 https://medium.com/@gwhi94/creating-a-gameboard-with-css-grid-47da8ac25078 
 */
 
-div{
-    padding: 20px;
+#instructions{
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-p{
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding: 20px;   
 }
 
 html{
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
+.foot {
+    padding: 20px;
+}
+
+main {
+    padding: 10px;
+}
+
 .game-board{ 
     display: grid;
-    grid-template-columns: 120px 120px 120px 120px 120px;
-    grid-template-rows: 120px 120px 120px 120px 120px 20px;
+    grid-template-columns: 10px 120px 120px 120px 120px 120px 10px;
+    grid-template-rows: 10px 120px 120px 120px 120px 120px 10px;
     justify-content: center;
 }
 
 h1{
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding: 20px;
 
-}
-
-h4{
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    font-size: medium;
-    color: red;
 }
 
 .boxA {
@@ -38,6 +37,7 @@ h4{
     border-color: black;
     box-shadow: 0 0 80px 80px #f77575 inset, 0 0 0 0 #000000;
     transition: all 150ms;
+    padding: 20px;
 }
 .boxA:hover {
     box-shadow: 0 0 80px 0 #f77575 inset, 0 0 10px 4px #f77575;
@@ -48,6 +48,7 @@ h4{
     border-color: black;
     box-shadow: 0 0 80px 80px #75b8f7 inset, 0 0 0 0 #000000;
     transition: all 150ms;
+    padding: 20px;
 }
 .boxB:hover {
     box-shadow: 0 0 80px 0 #75b8f7 inset, 0 0 10px 4px #75b8f7;
@@ -144,4 +145,39 @@ h4{
     display: flex;
     justify-content: center;
     align-items: center;
+  }
+
+  .wall {
+    box-shadow: 0 0 5px 5px black inset, 0 0 0 0 #000000;
+  }
+
+  #step {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 28px;
+    color: black;
+    padding-left: 20px;
+    padding-right: 5px;
+    padding-top: 5px;
+    padding-bottom: 0px;
+    margin: 0px;
+    text-align: center;
+  }
+
+  #error {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-size: 20px;
+      min-height: 26.5px;
+      margin: 0px;
+      color: red;
+      padding-left: 20px;
+      padding-right: 5px;
+      padding-top: 0px;
+      padding-bottom: 10px;
+      text-align: center;
+  }
+
+  #buttons {
+      text-align: center;
+      margin: 0px;
+      padding: 0px;
   }

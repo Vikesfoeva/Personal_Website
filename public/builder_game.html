@@ -20,7 +20,7 @@
           <link rel="stylesheet" href="./my-app/styles.css">
     </head>
     <body style="background-color: azure;">
-        <div>
+        <div id="instructions">
             <h1>Instructions</h1>
             <p>
                 The game is played on 5x5 board.  Each square on the board has a height that starts at 0, but cannot ever exceed 4.  One player is black and the other is white.  Player x will place their two builders first, and then player two will
@@ -41,7 +41,7 @@
                 </ol>
                 <br>
                 <br>
-                A player wins when:
+                <p>A player wins when:</p>
                 <ol>
                     <li>One of a players builders are on a square of height 3 or: </li>
                     <li>At the completion of a players turn, their opponent has no valid moves.  For example, if black has just moved and on their turn white
@@ -50,42 +50,74 @@
                 </ol>
             </p>
         </div>
-        <p">
-            <h2 id="step" style="padding: 20px;">Black, please place your builders</h2>
-            <h4 id ="error" style="padding: 20px;"></h4>
-            <button onclick="undoMostRecentMove()" id="undo" class="button">Undo</button>
-            <button onclick="reset()" id="reset" class="button">New Game</button>
-            <button onclick="moveHistory()" id="history" class="button">Move History</button>
-        </p>
+        <main>
+            <h2 id="step">Black, please place your builders</h2>
+            <p id ="error"></p>
+            <p id="buttons">
+                <button onclick="undoMostRecentMove()" id="undo" class="button">Undo</button>
+                <button onclick="reset()" id="reset" class="button">New Game</button>
+                <button onclick="moveHistory()" id="history" class="button">Move History</button>
+            </p>
+        </main>
         <div class = "game-board">
+            <div class="wall"></div>
+            <div class="wall"></div>
+            <div class="wall"></div>
+            <div class="wall"></div>
+            <div class="wall"></div>
+            <div class="wall"></div>
+            <div class="wall"></div>
+
+            <div class="wall"></div>
             <div class="boxA" id="box_00" onclick="squareClick(0, 0)"><div id="piece_00" class="piece"></div><div id="height_00" class="height">0</div></div>
             <div class="boxB" id="box_01" onclick="squareClick(0, 1)"><div id="piece_01" class="piece"></div><div id="height_01" class="height">0</div></div>
             <div class="boxA" id="box_02" onclick="squareClick(0, 2)"><div id="piece_02" class="piece"></div><div id="height_02" class="height">0</div></div>
             <div class="boxB" id="box_03" onclick="squareClick(0, 3)"><div id="piece_03" class="piece"></div><div id="height_03" class="height">0</div></div>
             <div class="boxA" id="box_04" onclick="squareClick(0, 4)"><div id="piece_04" class="piece"></div><div id="height_04" class="height">0</div></div>
+            <div class="wall"></div>
+
+            <div class="wall"></div>
             <div class="boxB" id="box_10" onclick="squareClick(1, 0)"><div id="piece_10" class="piece"></div><div id="height_10" class="height">0</div></div>
             <div class="boxA" id="box_11" onclick="squareClick(1, 1)"><div id="piece_11" class="piece"></div><div id="height_11" class="height">0</div></div>
             <div class="boxB" id="box_12" onclick="squareClick(1, 2)"><div id="piece_12" class="piece"></div><div id="height_12" class="height">0</div></div>
             <div class="boxA" id="box_13" onclick="squareClick(1, 3)"><div id="piece_13" class="piece"></div><div id="height_13" class="height">0</div></div>
             <div class="boxB" id="box_14" onclick="squareClick(1, 4)"><div id="piece_14" class="piece"></div><div id="height_14" class="height">0</div></div>
+            <div class="wall"></div>
+
+            <div class="wall"></div>
             <div class="boxA" id="box_20" onclick="squareClick(2, 0)"><div id="piece_20" class="piece"></div><div id="height_20" class="height">0</div></div>
             <div class="boxB" id="box_21" onclick="squareClick(2, 1)"><div id="piece_21" class="piece"></div><div id="height_21" class="height">0</div></div>
             <div class="boxA" id="box_22" onclick="squareClick(2, 2)"><div id="piece_22" class="piece"></div><div id="height_22" class="height">0</div></div>
             <div class="boxB" id="box_23" onclick="squareClick(2, 3)"><div id="piece_23" class="piece"></div><div id="height_23" class="height">0</div></div>
             <div class="boxA" id="box_24" onclick="squareClick(2, 4)"><div id="piece_24" class="piece"></div><div id="height_24" class="height">0</div></div>
+            <div class="wall"></div>
+
+            <div class="wall"></div>
             <div class="boxB" id="box_30" onclick="squareClick(3, 0)"><div id="piece_30" class="piece"></div><div id="height_30" class="height">0</div></div>
             <div class="boxA" id="box_31" onclick="squareClick(3, 1)"><div id="piece_31" class="piece"></div><div id="height_31" class="height">0</div></div>
             <div class="boxB" id="box_32" onclick="squareClick(3, 2)"><div id="piece_32" class="piece"></div><div id="height_32" class="height">0</div></div>
             <div class="boxA" id="box_33" onclick="squareClick(3, 3)"><div id="piece_33" class="piece"></div><div id="height_33" class="height">0</div></div>
             <div class="boxB" id="box_34" onclick="squareClick(3, 4)"><div id="piece_34" class="piece"></div><div id="height_34" class="height">0</div></div>
+            <div class="wall"></div>
+
+            <div class="wall"></div>
             <div class="boxA" id="box_40" onclick="squareClick(4, 0)"><div id="piece_40" class="piece"></div><div id="height_40" class="height">0</div></div>
             <div class="boxB" id="box_41" onclick="squareClick(4, 1)"><div id="piece_41" class="piece"></div><div id="height_41" class="height">0</div></div>
             <div class="boxA" id="box_42" onclick="squareClick(4, 2)"><div id="piece_42" class="piece"></div><div id="height_42" class="height">0</div></div>
             <div class="boxB" id="box_43" onclick="squareClick(4, 3)"><div id="piece_43" class="piece"></div><div id="height_43" class="height">0</div></div>
             <div class="boxA" id="box_44" onclick="squareClick(4, 4)"><div id="piece_44" class="piece"></div><div id="height_44" class="height">0</div></div>
+            <div class="wall"></div>
+
+            <div class="wall"></div>
+            <div class="wall"></div>
+            <div class="wall"></div>
+            <div class="wall"></div>
+            <div class="wall"></div>
+            <div class="wall"></div>
+            <div class="wall"></div>
         </div>
     </body>
-    <footer>
-
+    <footer id="foot">
+        <p><a href="https://github.com/Vikesfoeva/Personal_Website/tree/master/public" target="blank">Github Repository</a></p>
     </footer>
 </html>

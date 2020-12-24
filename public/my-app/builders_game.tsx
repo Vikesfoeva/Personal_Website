@@ -2,8 +2,9 @@
 // Adapted from final project in CS 161 with permision from Professor Tim Alcon
 
 // ideas to improve
-// prettier board, computer AI, play vs human on local, play vs human elsewhere
-// Undo feature, choosing builder a or builder b aka not being locked in
+// computer AI, play vs human on local, play vs human elsewhere
+// Undo feature
+// Only highlight valid clicks
 
 function undoMostRecentMove(){
 
