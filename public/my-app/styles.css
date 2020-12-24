@@ -73,6 +73,7 @@ h1{
     border-color: black;
     box-shadow: 0 0 80px 80px #4BB543 inset, 0 0 0 0 #000000;
     transition: all 150ms;
+    padding: 20px;
 }
 .highlightedMove:hover {
     box-shadow: 0 0 80px 0 #4BB543 inset, 0 0 10px 4px #4BB543;
@@ -83,6 +84,7 @@ h1{
     border-color:black;
     box-shadow: 0 0 80px 80px cyan inset, 0 0 0 0 #000000;
     transition: all 150ms;
+    padding: 20px;
 }
 .highlightedBuild:hover {
     box-shadow: 0 0 80px 0 cyan inset, 0 0 10px 4px cyan;
@@ -93,6 +95,7 @@ h1{
     border-color:black;
     box-shadow: 0 0 80px 80px blue inset, 0 0 0 0 #000000;
     transition: all 150ms;
+    padding: 20px;
 }
 .fromCell:hover {
     box-shadow: 0 0 80px 0 blue inset, 0 0 10px 4px blue;
@@ -103,6 +106,7 @@ h1{
     border-color:black;
     box-shadow: 0 0 80px 80px purple inset, 0 0 0 0 #000000;
     transition: all 150ms;
+    padding: 20px;
 }
 .recentMove:hover {
     box-shadow: 0 0 80px 0 purple inset, 0 0 10px 4px purple;
@@ -113,6 +117,7 @@ h1{
     border-color:black;
     box-shadow: 0 0 80px 80px #b19cd9 inset, 0 0 0 0 #000000;
     transition: all 150ms;
+    padding: 20px;
 }
 .recentBuild:hover {
     box-shadow: 0 0 80px 0 #b19cd9 inset, 0 0 10px 4px #b19cd9;
