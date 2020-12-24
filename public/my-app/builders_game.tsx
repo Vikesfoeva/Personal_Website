@@ -6,61 +6,11 @@
 // Undo feature
 // Only highlight valid clicks
 
-function undoMostRecentMove(){
-    window.alert("Lol I don't do anything yet");
-}
-
-function reset(){
-    var answer = window.confirm("Do you want to reset the game and start a new one?");
-    if (answer) {
-        game.x_b1.row = 99;
-        game.x_b1.column = 99;
-        game.x_b1.height = 99;
-        game.x_b2.row = 99;
-        game.x_b2.column = 99;
-        game.x_b2.height = 99;
-        game.o_b1.row = 99;
-        game.o_b1.column = 99;
-        game.o_b1.height = 99;
-        game.o_b2.row = 99;
-        game.o_b2.column = 99;
-        game.o_b2.height = 99;
-        game.x_turn = true;
-        game.turnPhase = 0;
-        document.getElementById(`step`).innerHTML = step[0];
-        clearError();
-        game.record.length = 0;
-
-        for (let i = 0; i < 5; i++) {
-            for (let j = 0; j < 5; j++){
-                let divBox: any = document.getElementById(`box_`.concat(String(i),String(j)));
-                let divPiece: any = document.getElementById(`piece_`.concat(String(i),String(j)));
-                let divHeight: any = document.getElementById(`height_`.concat(String(i),String(j)));
-                divPiece.innerHTML = '';
-                divHeight.innerHTML = '0';
-                game.board[i][j] = 0;
-                if((i+j) % 2 === 0) {
-                    divBox.className = "boxA";
-                } else {
-                    divBox.className = "boxB";
-                }
-            }
-        }
-    }
-    else {
-        //some code
-    }
-}
-
-function moveHistory(){
-    window.alert("Lol I don't do anything yet");
-}
-
 function squareClick(row_pick: number, column_pick: number){
-    const div: any = document.getElementById(`piece_`.concat(String(row_pick),String(column_pick)));
+    
     const divBox: any = document.getElementById(`box_`.concat(String(row_pick),String(column_pick)))
     if (game.turnPhase === 0) {
-        game.initialPlacement(row_pick, column_pick, div);
+        game.initialPlacement(row_pick, column_pick);
     } else if (game.turnPhase === 1) {
         from_row = row_pick;
         from_column = column_pick;
@@ -68,19 +18,13 @@ function squareClick(row_pick: number, column_pick: number){
 
     } else if (game.turnPhase === 2) {
         // If the player selects their other builder, re-route the logic to that builder
-        if (game.x_turn) {
-            if (row_pick === game.x_b1.row && column_pick === game.x_b1.column) {
-                game.changePhaseOne(row_pick, column_pick, divBox);
-                return;
-            } else if (row_pick === game.x_b2.row && column_pick === game.x_b2.column){
+        if (game.black_turn) {
+            if ((row_pick === game.black_1.row && column_pick === game.black_1.column) || (row_pick === game.black_2.row && column_pick === game.black_2.column)) {
                 game.changePhaseOne(row_pick, column_pick, divBox);
                 return;
             }
         } else {
-            if (row_pick === game.o_b1.row && column_pick === game.o_b1.column) {
-                game.changePhaseOne(row_pick, column_pick, divBox);
-                return;
-            } else if (row_pick === game.o_b2.row && column_pick === game.o_b2.column){
+            if ((row_pick === game.white_1.row && column_pick === game.white_1.column) || (row_pick === game.white_2.row && column_pick === game.white_2.column)) {
                 game.changePhaseOne(row_pick, column_pick, divBox);
                 return;
             }
@@ -96,7 +40,7 @@ function squareClick(row_pick: number, column_pick: number){
             to_column = column_pick;
             game.turnPhase = 3;
 
-            if (game.x_turn) {
+            if (game.black_turn) {
                 document.getElementById('step').innerHTML = step[4];
             } else {
                 document.getElementById('step').innerHTML = step[7];
@@ -124,32 +68,32 @@ function squareClick(row_pick: number, column_pick: number){
             }
 
             clearError()
-            if (game.x_turn) {
-                if (from_row === game.x_b1.row && from_column === game.x_b1.column) {
-                    game.x_b1.row = to_row;
-                    game.x_b1.column = to_column;
-                    game.x_b1.height = game.board[to_row][to_column];
-                } else if(from_row === game.x_b2.row && from_column === game.x_b2.column) {
-                    game.x_b2.row = to_row;
-                    game.x_b2.column = to_column;
-                    game.x_b2.height = game.board[to_row][to_column];
+            if (game.black_turn) {
+                if (from_row === game.black_1.row && from_column === game.black_1.column) {
+                    game.black_1.row = to_row;
+                    game.black_1.column = to_column;
+                    game.black_1.height = game.board[to_row][to_column];
+                } else if(from_row === game.black_2.row && from_column === game.black_2.column) {
+                    game.black_2.row = to_row;
+                    game.black_2.column = to_column;
+                    game.black_2.height = game.board[to_row][to_column];
                 } else {
-                    printFalse(`printFalse`);
+                    printError(`Something else went wrong`);
                 }
-            } else if(!game.x_turn) {
-                if (from_row === game.o_b1.row && from_column === game.o_b1.column) {
-                    game.o_b1.row = to_row;
-                    game.o_b1.column = to_column;
-                    game.o_b1.height = game.board[to_row][to_column];
-                } else if(from_row === game.o_b2.row && from_column === game.o_b2.column) {
-                    game.o_b2.row = to_row;
-                    game.o_b2.column = to_column;
-                    game.o_b2.height = game.board[to_row][to_column];
+            } else if(!game.black_turn) {
+                if (from_row === game.white_1.row && from_column === game.white_1.column) {
+                    game.white_1.row = to_row;
+                    game.white_1.column = to_column;
+                    game.white_1.height = game.board[to_row][to_column];
+                } else if(from_row === game.white_2.row && from_column === game.white_2.column) {
+                    game.white_2.row = to_row;
+                    game.white_2.column = to_column;
+                    game.white_2.height = game.board[to_row][to_column];
                 } else {
-                    printFalse(`printFalse`);
+                    printError(`Something else went wrong`);
                 }
             } else {
-                printFalse(`printFalse`);
+                printError(`Something else went wrong`);
             }
 
         } else {
@@ -163,7 +107,6 @@ function squareClick(row_pick: number, column_pick: number){
             const boxDiv: any = document.getElementById(`box_`.concat(String(row_pick), String(column_pick)));
             buildDiv.innerHTML = String(game.board[row_pick][column_pick]);
 
-
             validBuilds.forEach(element => {
                 document.getElementById(`box_`.concat(String(element[0]), String(element[1]))).className = element[2];
             });
@@ -171,11 +114,11 @@ function squareClick(row_pick: number, column_pick: number){
             clearError()
 
             // Check for victory by condition builder on height 3
-            if (game.x_b1.height === 3 || game.x_b2.height === 3) {
+            if (game.black_1.height === 3 || game.black_2.height === 3) {
                 document.getElementById('step').innerHTML = step[8];
                 game.turnPhase = 99;
                 return true;
-            } else if (game.o_b1.height === 3 || game.o_b2.height === 3) {
+            } else if (game.white_1.height === 3 || game.white_2.height === 3) {
                 document.getElementById('step').innerHTML = step[9];
                 game.turnPhase = 99;
                 return true;
@@ -184,48 +127,27 @@ function squareClick(row_pick: number, column_pick: number){
             // Check for victory by opponent having no valid moves
             let b1: any;
             let b2: any;
-            b1 = game.checkValidMoves(game.o_b1.row, game.o_b1.column);
-            b2 = game.checkValidMoves(game.o_b2.row, game.o_b2.column);
+            b1 = game.checkValidMoves(game.white_1.row, game.white_1.column);
+            b2 = game.checkValidMoves(game.white_2.row, game.white_2.column);
             if ((!b1 && !b2)) {
                 document.getElementById('step').innerHTML = step[8];
                 game.turnPhase = 99;
                 return true;
             }
-            b1 = game.checkValidMoves(game.x_b1.row, game.x_b1.column);
-            b2 = game.checkValidMoves(game.x_b2.row, game.x_b2.column);
+            b1 = game.checkValidMoves(game.black_1.row, game.black_1.column);
+            b2 = game.checkValidMoves(game.black_2.row, game.black_2.column);
             if ((!b1 && !b2)) {
                 document.getElementById('step').innerHTML = step[9];
                 game.turnPhase = 99;
                 return true;
             }
 
-            const divMoveFrom: any = document.getElementById(`box_`.concat(String(from_row), String(from_column)));
-            const divMoveTo: any = document.getElementById(`box_`.concat(String(to_row), String(to_column)));
-            const divBuild: any = document.getElementById(`box_`.concat(String(row_pick), String(column_pick)));
+            // Grid indexing lets you use this logic to determine if a box is A or B
+            let divMoveFromClass: string = ((from_row+from_column) % 2 === 0) ?  'boxA' : 'boxB';
+            let divMoveToClass: string = ((to_row+to_column) % 2 === 0) ? 'boxA' : 'boxB';
+            let divBuildClass: string = ((row_pick+column_pick) % 2 === 0) ? 'boxA' : 'boxB';
 
-            let divMoveFromClass: string;
-            let divMoveToClass: string;
-            let divBuildClass: string;
-
-            if ((from_row+from_column) % 2 === 0) {
-                divMoveFromClass = 'boxA';
-            } else {
-                divMoveFromClass = 'boxB';
-            }
-
-            if ((to_row+to_column) % 2 === 0) {
-                divMoveToClass = 'boxA';
-            } else {
-                divMoveToClass = 'boxB';
-            }
-
-            if ((row_pick+column_pick) % 2 === 0) {
-                divBuildClass = 'boxA';
-            } else {
-                divBuildClass = 'boxB';
-            }
-
-            game.record.push([from_row, from_column, to_row, to_column, row_pick, column_pick, game.x_turn, divMoveFromClass, divMoveToClass, divBuildClass]);
+            game.record.push([from_row, from_column, to_row, to_column, row_pick, column_pick, game.black_turn, divMoveFromClass, divMoveToClass, divBuildClass]);
 
             // Reset the last one
             const lastMove: number = game.record.length - 2;
@@ -233,12 +155,15 @@ function squareClick(row_pick: number, column_pick: number){
             if (lastMove > -1){
                 document.getElementById('box_'.concat(String(moveArray[0]), String(moveArray[1]))).className = moveArray[7];
                 document.getElementById('box_'.concat(String(moveArray[2]), String(moveArray[3]))).className = moveArray[8];
-                document.getElementById('box_'.concat(String(moveArray[4]), String(moveArray[5]))).className = moveArray[9];
+                if (game.board[moveArray[4]][moveArray[5]] !== 4) {
+                    document.getElementById('box_'.concat(String(moveArray[4]), String(moveArray[5]))).className = moveArray[9];
+                }
             }
 
-            divMoveFrom.className = 'recentMove';
-            divMoveTo.className = 'recentMove';
-            divBuild.className = 'recentBuild';
+            // Mark the recent move
+            document.getElementById(`box_`.concat(String(from_row), String(from_column))).className = 'recentMove';
+            document.getElementById(`box_`.concat(String(to_row), String(to_column))).className = 'recentMove';
+            document.getElementById(`box_`.concat(String(row_pick), String(column_pick))).className = 'recentBuild';
 
             if (game.board[row_pick][column_pick] === 4) {
                 boxDiv.className = "maxHeight";
@@ -248,7 +173,7 @@ function squareClick(row_pick: number, column_pick: number){
 
             game.changeTurn();
             game.turnPhase = 1;
-            if (game.x_turn) {
+            if (game.black_turn) {
                 document.getElementById('step').innerHTML = step[2];
             } else {
                 document.getElementById('step').innerHTML = step[5];
@@ -259,11 +184,8 @@ function squareClick(row_pick: number, column_pick: number){
 
 }
 
-function printFalse(input: string){
-    console.log(`False - ${input}`);
-}
-
 function printError(input: string){
+    console.log(`False - ${input}`);
     document.getElementById('error').innerHTML = input;
 }
 
@@ -274,25 +196,23 @@ function clearError(){
 class GameBoard {
 
     board: number[][];
-    state: String;   // Used to describe whether the game is still ongoing or not
-    x_turn: Boolean;
+    black_turn: Boolean;
     turnPhase: number; // 0 === Placement phase, 1 === choose builder to move, 2 === choose destiantion, 3 === choose build square 
-    x_b1: Builder;
-    x_b2: Builder;
-    o_b1: Builder;
-    o_b2: Builder;
+    black_1: Builder;
+    black_2: Builder;
+    white_1: Builder;
+    white_2: Builder;
     record: any[][];
 
     constructor(){
         // Creates the board
         this.board = [[0, 0, 0, 0, 0],[0, 0, 0, 0, 0],[0, 0, 0, 0, 0],[0, 0, 0, 0, 0],[0, 0, 0, 0, 0]];
-        this.state = `In Progress`;
-        this.x_turn = true;
+        this.black_turn = true;
         this.turnPhase = 0;
-        this.x_b1 = new Builder();
-        this.x_b2 = new Builder();
-        this.o_b1 = new Builder();
-        this.o_b2 = new Builder();
+        this.black_1 = new Builder();
+        this.black_2 = new Builder();
+        this.white_1 = new Builder();
+        this.white_2 = new Builder();
         this.record = [];
     }
 
@@ -308,7 +228,7 @@ class GameBoard {
 
     turnPhaseOne(row_pick: number, column_pick: number, divBox: any){
         if (game.clickMove(row_pick, column_pick)) {   
-            if (game.x_turn) {
+            if (game.black_turn) {
                 document.getElementById('step').innerHTML = step[3];
             } else {
                 document.getElementById('step').innerHTML = step[6];
@@ -338,41 +258,42 @@ class GameBoard {
 
     }
 
-    initialPlacement(row: number, col: number, div: any) {
+    initialPlacement(row: number, col: number) {
         // , row_b2: number, col_b2: number, player: String
+        const div: any = document.getElementById(`piece_`.concat(String(row),String(col)));
+
         if (this.isOccupied(row, col)){
-            printFalse(`That space is occupied`);
             document.getElementById('error').innerHTML = `That space is occupied already`;
             return false;
         }
 
-        if (this.x_turn) {
-            if (this.x_b1.height === 99) {
-                this.x_b1.row = row;
-                this.x_b1.column = col;
-                this.x_b1.height = 0;
+        if (this.black_turn) {
+            if (this.black_1.height === 99) {
+                this.black_1.row = row;
+                this.black_1.column = col;
+                this.black_1.height = 0;
                 div.innerHTML += `<img src="./my-app/blackPawn.png" height=50px />`;
                 clearError()
             } else{
-                this.x_b2.row = row;
-                this.x_b2.column = col;
-                this.x_b2.height = 0;
+                this.black_2.row = row;
+                this.black_2.column = col;
+                this.black_2.height = 0;
                 div.innerHTML += `<img src="./my-app/blackPawn.png" height=50px />`;
                 this.changeTurn();
                 document.getElementById(`step`).innerHTML = step[1];
                 clearError()
             }
-        } else if (!this.x_turn) {
-            if (this.o_b1.height === 99) {
-                this.o_b1.row = row;
-                this.o_b1.column = col;
-                this.o_b1.height = 0;
+        } else if (!this.black_turn) {
+            if (this.white_1.height === 99) {
+                this.white_1.row = row;
+                this.white_1.column = col;
+                this.white_1.height = 0;
                 div.innerHTML += `<img src="./my-app/whitePawn.png" height=50px />`;
                 clearError()
             } else{
-                this.o_b2.row = row;
-                this.o_b2.column = col;
-                this.o_b2.height = 0;
+                this.white_2.row = row;
+                this.white_2.column = col;
+                this.white_2.height = 0;
                 this.changeTurn();
                 this.turnPhase += 1;
                 div.innerHTML += `<img src="./my-app/whitePawn.png" height=50px />`;
@@ -380,7 +301,6 @@ class GameBoard {
                 clearError()
             }
         } else {
-            printFalse(`Inital Placement`);
             printError(`Invalid placement`);
         }
     }
@@ -397,13 +317,13 @@ class GameBoard {
 
     isOccupied(row: number, column: number){
         // returns false if space is free (not occupied)
-        if (row === this.x_b1.row && column === this.x_b1.column){
+        if (row === this.black_1.row && column === this.black_1.column){
             return true;
-        } else if(row === this.x_b2.row && column === this.x_b2.column){
+        } else if(row === this.black_2.row && column === this.black_2.column){
             return true;
-        } else if(row === this.o_b1.row && column === this.o_b1.column){
+        } else if(row === this.white_1.row && column === this.white_1.column){
             return true;
-        } else if(row === this.o_b2.row && column === this.o_b2.column){
+        } else if(row === this.white_2.row && column === this.white_2.column){
             return true;
         }
 
@@ -411,7 +331,7 @@ class GameBoard {
     }
 
     changeTurn(){
-        this.x_turn = !this.x_turn;
+        this.black_turn = !this.black_turn;
     }
 
     printBoard(){
@@ -422,18 +342,17 @@ class GameBoard {
 
     printBuilders(){
         console.log(`x builders:`);
-        console.log(this.x_b1);
-        console.log(this.x_b2);
+        console.log(this.black_1);
+        console.log(this.black_2);
         console.log();
         console.log(`o builders`);
-        console.log(this.o_b1);
-        console.log(this.o_b2);
+        console.log(this.white_1);
+        console.log(this.white_2);
     }
 
     isAdjacent(row1: number, column1: number, row2: number, column2: number){
 
         if (Math.abs(row1 - row2) > 1 || Math.abs(column1 - column2) > 1) {
-            printFalse(`Not adjacent`);
             printError(`Not adjacent`);
             return false;
         }
@@ -443,24 +362,24 @@ class GameBoard {
 
     clickMove(row: number, col: number) {
         // Returns true if the user successfully selects a builder who has moves
-        if (game.x_turn){
-            if (row === game.x_b1.row && col === game.x_b1.column) {
+        if (game.black_turn){
+            if (row === game.black_1.row && col === game.black_1.column) {
                 // 
-            } else if (row === game.x_b2.row && col === game.x_b2.column) {
+            } else if (row === game.black_2.row && col === game.black_2.column) {
                 //
             } else {
                 return false;
             }
-        } else if (!game.x_turn) {
-            if (row === game.o_b1.row && col === game.o_b1.column) {
+        } else if (!game.black_turn) {
+            if (row === game.white_1.row && col === game.white_1.column) {
                 //
-            } else if (row === game.o_b2.row && col === game.o_b2.column) {
+            } else if (row === game.white_2.row && col === game.white_2.column) {
                 //
             } else {
                 return false;
             }
         } else {
-            printFalse(`printFalse`);
+            printError(`Something else went wrong`);
         }
         if (game.checkValidMoves(row, col, false)) {
             return true;
@@ -550,7 +469,7 @@ class GameBoard {
                 }
 
                 if (game.isOccupied(build_row_check, build_col_check)){
-                    if (build_row_check != row || build_col_check != col) {
+                    if (build_row_check !== row || build_col_check !== col) {
                         continue;
                     }
                 }
@@ -573,13 +492,11 @@ class GameBoard {
         }
         
         if ((this.board[row][col] - this.board[from_row][from_column]) > 1){
-            printFalse(`Can't jump that high!`);
             printError(`You can't jump that high!`);
             return false;
         }
 
         if (!this.isAdjacent(row, col, from_row, from_column)){
-            printFalse(`You need to move to an adjacent square`);
             printError(`That is not adjacent!`);
             return false;
         }
@@ -594,13 +511,11 @@ class GameBoard {
         };
 
         if (!this.isAdjacent(to_row, to_column, row, col)){
-            printFalse(`You need to move to an adjacent square`);
             printError(`That is not adjacent!`)
             return false;
         }        
 
         if (game.board[row][col] === 4) {
-            printFalse(`Cannot build higher than 4`);
             printError(`Cannot build higher than 4`);
             return false;
         }
@@ -622,6 +537,53 @@ class Builder{
         this.height = 99;
     }
 
+}
+
+function undoMostRecentMove(){
+    window.alert("Lol I don't do anything yet");
+}
+
+function reset(){
+    var answer = window.confirm("Do you want to reset the game and start a new one?");
+    if (answer) {
+        game.black_1.row = 99;
+        game.black_1.column = 99;
+        game.black_1.height = 99;
+        game.black_2.row = 99;
+        game.black_2.column = 99;
+        game.black_2.height = 99;
+        game.white_1.row = 99;
+        game.white_1.column = 99;
+        game.white_1.height = 99;
+        game.white_2.row = 99;
+        game.white_2.column = 99;
+        game.white_2.height = 99;
+        game.black_turn = true;
+        game.turnPhase = 0;
+        document.getElementById(`step`).innerHTML = step[0];
+        clearError();
+        game.record.length = 0;
+
+        for (let i = 0; i < 5; i++) {
+            for (let j = 0; j < 5; j++){
+                let divBox: any = document.getElementById(`box_`.concat(String(i),String(j)));
+                let divPiece: any = document.getElementById(`piece_`.concat(String(i),String(j)));
+                let divHeight: any = document.getElementById(`height_`.concat(String(i),String(j)));
+                divPiece.innerHTML = '';
+                divHeight.innerHTML = '0';
+                game.board[i][j] = 0;
+                if((i+j) % 2 === 0) {
+                    divBox.className = "boxA";
+                } else {
+                    divBox.className = "boxB";
+                }
+            }
+        }
+    }
+}
+
+function moveHistory(){
+    window.alert("Lol I don't do anything yet");
 }
 
 let game = new GameBoard();
@@ -646,92 +608,3 @@ let to_column: number;
 let validBuilds: any = [];
 let build_row: number;
 let build_column: number;
-
-
-    // Legacy method that should be able to be removed
-    // makeMove(fromRow: number, fromColumn: number, toRow: number, toColumn: number, buildRow: number, buildColumn: number){
-    //     // This is the function for making a move from console
-    //     if (!this.onBoard(fromRow, fromColumn) || !this.onBoard(toRow, toColumn) || !this.onBoard(buildRow, buildColumn)) {
-    //         printFalse(`Not on board`);
-    //         return false;
-    //     }
-
-    //     if (this.state != `In Progress`) {
-    //         printFalse(`Game is no longer going on`);
-    //         return false;
-    //     }
-
-    //     if (this.isOccupied(toRow, toColumn)) {
-    //         printFalse(`Someone is already there!`);
-    //         return false;
-    //     }
-
-
-    //     // test this, the logic feels off
-    //     if (this.isOccupied(buildRow, buildColumn)) {
-    //         // it's ok to build where you just left
-    //         if (fromRow != buildRow && fromColumn != buildColumn){
-    //             printFalse(`Someone is there, no building!`)
-    //             return false;
-    //         }
-    //     }
-
-    //     if (toRow === buildRow && toColumn === buildColumn) {
-    //         printFalse(`You are about to move there!`);
-    //         return false;
-    //     }
-
-    //     if ((this.board[toRow][toColumn] - this.board[fromRow][fromColumn]) > 1){
-    //         printFalse(`Can't jump that high!`);
-    //         return false;
-    //     }
-
-    //     if (!this.isAdjacent(fromRow, fromColumn, toRow, toColumn)){
-    //         printFalse(`You need to move to an adjacent square`);
-    //         return false;
-    //     }
-
-    //     if (!this.isAdjacent(toRow, toColumn, buildRow, buildColumn)){
-    //         printFalse(`You need to move to an adjacent square`);
-    //         return false;
-    //     }
-
-    //     if (this.board[buildRow][buildColumn] > 4) {
-    //         printFalse(`Can't build that high`);
-    //         return false;
-    //     }
-
-    //     if (this.x_turn) {
-    //         if (fromRow === this.x_b1.row && fromColumn === this.x_b1.column) {
-    //             this.x_b1.row = toRow;
-    //             this.x_b1.column = toColumn;
-    //             this.x_b1.height = this.board[toRow][toColumn];
-    //         } else if(fromRow === this.x_b2.row && fromColumn === this.x_b2.column) {
-    //             this.x_b2.row = toRow;
-    //             this.x_b2.column = toColumn;
-    //             this.x_b2.height = this.board[toRow][toColumn];
-    //         } else {
-    //             printFalse(`It was x's turn but a builder was not properly referenced`);
-    //             return false;
-    //         }
-    //     } else if(!this.x_turn){
-    //         if (fromRow === this.o_b1.row && fromColumn === this.o_b1.column) {
-    //             this.o_b1.row = toRow;
-    //             this.o_b1.column = toColumn;
-    //             this.o_b1.height = this.board[toRow][toColumn];
-    //         } else if(fromRow === this.o_b2.row && fromColumn === this.o_b2.column) {
-    //             this.o_b2.row = toRow;
-    //             this.o_b2.column = toColumn;
-    //             this.o_b2.height = this.board[toRow][toColumn];
-    //         } else {
-    //             printFalse(`It was x's turn but a builder was not properly referenced`);
-    //             return false;
-    //         }
-    //     } else {
-    //         printFalse(`Somehow you made something else go wrong`)
-    //         return false;
-    //     }
-
-    //     this.board[buildRow][buildColumn] += 1;
-    //     this.changeTurn();
-    // }
