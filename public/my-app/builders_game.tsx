@@ -540,7 +540,89 @@ class Builder{
 }
 
 function undoMostRecentMove(){
-    window.alert("Lol I don't do anything yet");
+    var answer = window.confirm("Do you want to undo the most recent move?  Note that if the current player has not yet finished their build, it will undo their entire turn as well.");
+    if (answer) {
+        if (game.record.length === 0){
+            return true;
+        }
+        const lastMove = game.record.pop();
+        const divFromPiece: any = document.getElementById(`piece_`.concat(String(lastMove[0]), String(lastMove[1])));
+        const divToPiece: any = document.getElementById(`piece_`.concat(String(lastMove[2]), String(lastMove[3])));
+        const divBuild: any = document.getElementById(`box_`.concat(String(lastMove[4]), String(lastMove[5])));
+        const divBuildHeight: any = document.getElementById(`height_`.concat(String(lastMove[4]), String(lastMove[5])));
+
+        divFromPiece.innerHTML = divToPiece.innerHTML;
+        divToPiece.innerHTML = '';
+
+        if (lastMove[2] === game.black_1.row && lastMove[3] === game.black_1.column) {
+            game.black_1.row = lastMove[0];
+            game.black_1.column = lastMove[1];
+            game.black_1.height = game.board[lastMove[0]][lastMove[1]];
+        } else if (lastMove[2] === game.black_2.row && lastMove[3] === game.black_2.column) {
+            game.black_2.row = lastMove[0];
+            game.black_2.column = lastMove[1];
+            game.black_2.height = game.board[lastMove[0]][lastMove[1]];
+        } else if (lastMove[2] === game.white_1.row && lastMove[3] === game.white_1.column) {
+            game.white_1.row = lastMove[0];
+            game.white_1.column = lastMove[1];
+            game.white_1.height = game.board[lastMove[0]][lastMove[1]];
+        } else if (lastMove[2] === game.white_2.row && lastMove[3] === game.white_2.column) {
+            game.white_2.row = lastMove[0];
+            game.white_2.column = lastMove[1];
+            game.white_2.height = game.board[lastMove[0]][lastMove[1]];
+        }
+
+        if (game.board[lastMove[4]][lastMove[5]] === 4) {
+            divBuild.innerHTML = `<div id="piece_${lastMove[4]}${lastMove[5]}" class="piece"></div><div id="height_${lastMove[4]}${lastMove[5]}" class="height">3</div>`
+            game.board[lastMove[4]][lastMove[5]] = 3;
+        } else {
+            game.board[lastMove[4]][lastMove[5]] -= 1;
+            divBuildHeight.innerHTML = game.board[lastMove[4]][lastMove[5]];
+        }
+        const divFrom: any = document.getElementById(`box_`.concat(String(lastMove[0]), String(lastMove[1])));
+        const divTo: any = document.getElementById(`box_`.concat(String(lastMove[2]), String(lastMove[3])));
+        divFrom.className = lastMove[7];
+        divTo.className = lastMove[8];
+        divBuild.className = lastMove[9];
+
+        game.changeTurn();
+        game.turnPhase = 1;
+
+        for (let i = 0; i < 5; i++) {
+            for (let j = 0; j < 5; j++){
+                let divBox: any = document.getElementById(`box_`.concat(String(i),String(j)));
+                if((i+j) % 2 === 0) {
+                    divBox.className = "boxA";
+                } else {
+                    divBox.className = "boxB";
+                }
+            }
+        }
+
+        if (game.record.length === 0){
+            return true;
+        }
+
+        const newLastMove = game.record[game.record.length-1];
+        const divOldFrom: any = document.getElementById(`box_`.concat(String(newLastMove[0]), String(newLastMove[1])));
+        const divOldTo: any = document.getElementById(`box_`.concat(String(newLastMove[2]), String(newLastMove[3])));
+        const divOldBuild: any = document.getElementById(`box_`.concat(String(newLastMove[4]), String(newLastMove[5])));
+
+        from_row = newLastMove[0];
+        from_column = newLastMove[1]; 
+        to_row = newLastMove[2];
+        to_column = newLastMove[3];
+
+        divOldFrom.className = "recentMove";
+        divOldTo.className = "recentMove";
+        divOldBuild.className = "recentBuild";
+
+        if (game.black_turn) {
+            document.getElementById('step').innerHTML = step[2];
+        } else {
+            document.getElementById('step').innerHTML = step[5];
+        }
+    }
 }
 
 function reset(){
