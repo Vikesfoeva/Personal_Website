@@ -194,6 +194,8 @@ var GameBoard = /** @class */ (function () {
         this.record = [];
     }
     GameBoard.prototype.changePhaseOne = function (row_pick, column_pick, divBox) {
+        var divMoveFromClass = ((from_row + from_column) % 2 === 0) ? 'boxA' : 'boxB';
+        document.getElementById("box_".concat(String(from_row), String(from_column))).className = divMoveFromClass;
         from_row = row_pick;
         from_column = column_pick;
         document.getElementById("box_".concat(String(from_row), String(from_column))).className = from_class;
