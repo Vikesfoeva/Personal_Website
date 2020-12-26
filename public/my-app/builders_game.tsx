@@ -3,7 +3,6 @@
 
 // ideas to improve
 // computer AI, play vs human on local, play vs human elsewhere
-// Undo feature
 // Only highlight valid clicks
 
 function squareClick(row_pick: number, column_pick: number){
@@ -73,10 +72,20 @@ function squareClick(row_pick: number, column_pick: number){
                     game.black_1.row = to_row;
                     game.black_1.column = to_column;
                     game.black_1.height = game.board[to_row][to_column];
+                    if (game.checkAOrB(game.black_2.row, game.black_2.column)){
+                        document.getElementById(`box_`.concat(String(game.black_2.row),String(game.black_2.column))).className = "boxAInvalid";
+                    } else {
+                        document.getElementById(`box_`.concat(String(game.black_2.row),String(game.black_2.column))).className = "boxBInvalid";
+                    }
                 } else if(from_row === game.black_2.row && from_column === game.black_2.column) {
                     game.black_2.row = to_row;
                     game.black_2.column = to_column;
                     game.black_2.height = game.board[to_row][to_column];
+                    if (game.checkAOrB(game.black_1.row, game.black_1.column)){
+                        document.getElementById(`box_`.concat(String(game.black_1.row),String(game.black_1.column))).className = "boxAInvalid";
+                    } else {
+                        document.getElementById(`box_`.concat(String(game.black_1.row),String(game.black_1.column))).className = "boxBInvalid";
+                    }
                 } else {
                     printError(`Something else went wrong`);
                 }
@@ -85,10 +94,20 @@ function squareClick(row_pick: number, column_pick: number){
                     game.white_1.row = to_row;
                     game.white_1.column = to_column;
                     game.white_1.height = game.board[to_row][to_column];
+                    if (game.checkAOrB(game.white_2.row, game.white_2.column)){
+                        document.getElementById(`box_`.concat(String(game.white_2.row),String(game.white_2.column))).className = "boxAInvalid";
+                    } else {
+                        document.getElementById(`box_`.concat(String(game.white_2.row),String(game.white_2.column))).className = "boxBInvalid";
+                    }
                 } else if(from_row === game.white_2.row && from_column === game.white_2.column) {
                     game.white_2.row = to_row;
                     game.white_2.column = to_column;
                     game.white_2.height = game.board[to_row][to_column];
+                    if (game.checkAOrB(game.white_1.row, game.white_1.column)){
+                        document.getElementById(`box_`.concat(String(game.white_1.row),String(game.white_1.column))).className = "boxAInvalid";
+                    } else {
+                        document.getElementById(`box_`.concat(String(game.white_1.row),String(game.white_1.column))).className = "boxBInvalid";
+                    }
                 } else {
                     printError(`Something else went wrong`);
                 }
@@ -173,6 +192,7 @@ function squareClick(row_pick: number, column_pick: number){
 
             game.changeTurn();
             game.turnPhase = 1;
+            game.setupPlayerMove();
             if (game.black_turn) {
                 document.getElementById('step').innerHTML = step[2];
             } else {
@@ -217,8 +237,9 @@ class GameBoard {
     }
 
     changePhaseOne(row_pick: number, column_pick: number, divBox: any){
-        let divMoveFromClass: string = ((from_row+from_column) % 2 === 0) ?  'boxA' : 'boxB';
+        let divMoveFromClass: string = (this.checkAOrB(from_row, from_column)) ?  'boxA' : 'boxB';
         document.getElementById(`box_`.concat(String(from_row), String(from_column))).className = divMoveFromClass;
+
         from_row = row_pick;
         from_column = column_pick;
         document.getElementById(`box_`.concat(String(from_row), String(from_column))).className = from_class;
@@ -262,7 +283,8 @@ class GameBoard {
 
     initialPlacement(row: number, col: number) {
         // , row_b2: number, col_b2: number, player: String
-        const div: any = document.getElementById(`piece_`.concat(String(row),String(col)));
+        const divPiece: any = document.getElementById(`piece_`.concat(String(row),String(col)));
+        const divBox: any = document.getElementById(`box_`.concat(String(row),String(col)));
 
         if (this.isOccupied(row, col)){
             document.getElementById('error').innerHTML = `That space is occupied already`;
@@ -274,13 +296,13 @@ class GameBoard {
                 this.black_1.row = row;
                 this.black_1.column = col;
                 this.black_1.height = 0;
-                div.innerHTML += `<img src="./my-app/blackPawn.png" height=50px />`;
+                divPiece.innerHTML += `<img src="./my-app/blackPawn.png" height=50px />`;
                 clearError()
             } else{
                 this.black_2.row = row;
                 this.black_2.column = col;
                 this.black_2.height = 0;
-                div.innerHTML += `<img src="./my-app/blackPawn.png" height=50px />`;
+                divPiece.innerHTML += `<img src="./my-app/blackPawn.png" height=50px />`;
                 this.changeTurn();
                 document.getElementById(`step`).innerHTML = step[1];
                 clearError()
@@ -290,7 +312,7 @@ class GameBoard {
                 this.white_1.row = row;
                 this.white_1.column = col;
                 this.white_1.height = 0;
-                div.innerHTML += `<img src="./my-app/whitePawn.png" height=50px />`;
+                divPiece.innerHTML += `<img src="./my-app/whitePawn.png" height=50px />`;
                 clearError()
             } else{
                 this.white_2.row = row;
@@ -298,13 +320,70 @@ class GameBoard {
                 this.white_2.height = 0;
                 this.changeTurn();
                 this.turnPhase += 1;
-                div.innerHTML += `<img src="./my-app/whitePawn.png" height=50px />`;
+                divPiece.innerHTML += `<img src="./my-app/whitePawn.png" height=50px />`;
                 document.getElementById(`step`).innerHTML = step[2];
                 clearError()
+
+                // This is the second placement for white, so now we must prep the board for black.
+                game.setupPlayerMove()
+
             }
         } else {
             printError(`Invalid placement`);
         }
+        if ((row+col) % 2 === 0) {
+            divBox.className = "boxAInvalid";
+        } else {
+            divBox.className = "boxBInvalid";
+        }
+    }
+
+    setupPlayerMove(){
+        let divBox: any;
+        for (let i = 0; i < 5; i++){
+            for (let j = 0; j < 5; j++){
+                divBox = document.getElementById(`box_`.concat(String(i),String(j)));
+                if (game.checkAOrB(i, j) && divBox.className === "boxA") {
+                    divBox.className = "boxAInvalid";
+                } else if (!game.checkAOrB(i, j) && divBox.className === "boxB") {
+                    divBox.className = "boxBInvalid";
+                }
+            }
+        }
+        console.log(game.black_turn);
+        if (game.black_turn) {
+            console.log('Black turn');
+            if (game.checkAOrB(game.black_1.row, game.black_1.column)){
+                document.getElementById(`box_`.concat(String(game.black_1.row),String(game.black_1.column))).className = "boxA";
+            } else {
+                document.getElementById(`box_`.concat(String(game.black_1.row),String(game.black_1.column))).className = "boxB";
+            }
+            if (game.checkAOrB(game.black_2.row, game.black_2.column)){
+                document.getElementById(`box_`.concat(String(game.black_2.row),String(game.black_2.column))).className = "boxA";
+            } else {
+                document.getElementById(`box_`.concat(String(game.black_2.row),String(game.black_2.column))).className = "boxB";
+            }
+        } else if (!game.black_turn) {
+            console.log('White turn');
+            if (game.checkAOrB(game.white_1.row, game.white_1.column)){
+                document.getElementById(`box_`.concat(String(game.white_1.row),String(game.white_1.column))).className = "boxA";
+            } else {
+                document.getElementById(`box_`.concat(String(game.white_1.row),String(game.white_1.column))).className = "boxB";
+            }
+            if (game.checkAOrB(game.white_2.row, game.white_2.column)){
+                document.getElementById(`box_`.concat(String(game.white_2.row),String(game.white_2.column))).className = "boxA";
+            } else {
+                document.getElementById(`box_`.concat(String(game.white_2.row),String(game.white_2.column))).className = "boxB";
+            }
+        }
+    }
+
+    checkAOrB(row: number, column: number) {
+        // A === true, B === false
+        if ((row+column) % 2 === 0) {
+            return true;
+        } 
+        return false;
     }
 
     onBoard(row: number, column: number){

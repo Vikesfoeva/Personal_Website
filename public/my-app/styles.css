@@ -43,6 +43,14 @@ h1{
     box-shadow: 0 0 80px 0 #f77575 inset, 0 0 10px 4px #f77575;
 }
 
+.boxAInvalid {
+    border: 2px solid black;
+    border-color: black;
+    box-shadow: 0 0 80px 80px #f77575 inset, 0 0 0 0 #000000;
+    transition: all 150ms;
+    padding: 20px;
+}
+
 .boxB {
     border: 2px solid black;
     border-color: black;
@@ -52,6 +60,14 @@ h1{
 }
 .boxB:hover {
     box-shadow: 0 0 80px 0 #75b8f7 inset, 0 0 10px 4px #75b8f7;
+}
+
+.boxBInvalid {
+    border: 2px solid black;
+    border-color: black;
+    box-shadow: 0 0 80px 80px #75b8f7 inset, 0 0 0 0 #000000;
+    transition: all 150ms;
+    padding: 20px;
 }
 
 .height {
@@ -97,9 +113,6 @@ h1{
     transition: all 150ms;
     padding: 20px;
 }
-.fromCell:hover {
-    box-shadow: 0 0 80px 0 blue inset, 0 0 10px 4px blue;
-}
 
 .recentMove {
     border: 2px solid black;
@@ -108,9 +121,6 @@ h1{
     transition: all 150ms;
     padding: 20px;
 }
-.recentMove:hover {
-    box-shadow: 0 0 80px 0 purple inset, 0 0 10px 4px purple;
-}
 
 .recentBuild {
     border: 2px solid black;
@@ -118,9 +128,6 @@ h1{
     box-shadow: 0 0 80px 80px #b19cd9 inset, 0 0 0 0 #000000;
     transition: all 150ms;
     padding: 20px;
-}
-.recentBuild:hover {
-    box-shadow: 0 0 80px 0 #b19cd9 inset, 0 0 10px 4px #b19cd9;
 }
 
 .button {
