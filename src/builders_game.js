@@ -3,6 +3,10 @@
 // ideas to improve
 // computer AI, play vs human on local, play vs human elsewhere
 // Only highlight valid clicks
+// Commented out lines:
+// 52
+// 141
+// 267
 function squareClick(row_pick, column_pick) {
     var divBox = document.getElementById("box_".concat(String(row_pick), String(column_pick)));
     if (game.turnPhase === 0) {
@@ -18,13 +22,13 @@ function squareClick(row_pick, column_pick) {
         if (game.black_turn) {
             if ((row_pick === game.black_1.row && column_pick === game.black_1.column) || (row_pick === game.black_2.row && column_pick === game.black_2.column)) {
                 game.changePhaseOne(row_pick, column_pick, divBox);
-                return;
+                return true;
             }
         }
         else {
             if ((row_pick === game.white_1.row && column_pick === game.white_1.column) || (row_pick === game.white_2.row && column_pick === game.white_2.column)) {
                 game.changePhaseOne(row_pick, column_pick, divBox);
-                return;
+                return true;
             }
         }
         // Attempt to proceed with phase 2
@@ -43,9 +47,11 @@ function squareClick(row_pick, column_pick) {
                 document.getElementById('step').innerHTML = step[7];
             }
             // Sets the cells back to their old color
-            document.getElementById("box_".concat(String(from_row), String(from_column))).className = from_class;
+            var fromRowFromColumn = document.getElementById("box_".concat(String(from_row), String(from_column)));
+            fromRowFromColumn.className = from_class;
             validMoves.forEach(function (element) {
-                document.getElementById("box_".concat(String(element[0]), String(element[1]))).className = element[2];
+                var element01 = document.getElementById("box_".concat(String(element[0]), String(element[1])));
+                element01.className = element[2];
             });
             // Highlight valid build cells
             validBuilds.length = 0;
@@ -67,22 +73,24 @@ function squareClick(row_pick, column_pick) {
                     game.black_1.row = to_row;
                     game.black_1.column = to_column;
                     game.black_1.height = game.board[to_row][to_column];
+                    var black2RowColumn = document.getElementById("box_".concat(String(game.black_2.row), String(game.black_2.column)));
                     if (game.checkAOrB(game.black_2.row, game.black_2.column)) {
-                        document.getElementById("box_".concat(String(game.black_2.row), String(game.black_2.column))).className = "boxAInvalid";
+                        black2RowColumn.className = "boxAInvalid";
                     }
                     else {
-                        document.getElementById("box_".concat(String(game.black_2.row), String(game.black_2.column))).className = "boxBInvalid";
+                        black2RowColumn.className = "boxBInvalid";
                     }
                 }
                 else if (from_row === game.black_2.row && from_column === game.black_2.column) {
                     game.black_2.row = to_row;
                     game.black_2.column = to_column;
                     game.black_2.height = game.board[to_row][to_column];
+                    var black1RowColumn = document.getElementById("box_".concat(String(game.black_1.row), String(game.black_1.column)));
                     if (game.checkAOrB(game.black_1.row, game.black_1.column)) {
-                        document.getElementById("box_".concat(String(game.black_1.row), String(game.black_1.column))).className = "boxAInvalid";
+                        black1RowColumn.className = "boxAInvalid";
                     }
                     else {
-                        document.getElementById("box_".concat(String(game.black_1.row), String(game.black_1.column))).className = "boxBInvalid";
+                        black1RowColumn.className = "boxBInvalid";
                     }
                 }
                 else {
@@ -94,22 +102,24 @@ function squareClick(row_pick, column_pick) {
                     game.white_1.row = to_row;
                     game.white_1.column = to_column;
                     game.white_1.height = game.board[to_row][to_column];
+                    var white2RowColumn = document.getElementById("box_".concat(String(game.white_2.row), String(game.white_2.column)));
                     if (game.checkAOrB(game.white_2.row, game.white_2.column)) {
-                        document.getElementById("box_".concat(String(game.white_2.row), String(game.white_2.column))).className = "boxAInvalid";
+                        white2RowColumn.className = "boxAInvalid";
                     }
                     else {
-                        document.getElementById("box_".concat(String(game.white_2.row), String(game.white_2.column))).className = "boxBInvalid";
+                        white2RowColumn.className = "boxBInvalid";
                     }
                 }
                 else if (from_row === game.white_2.row && from_column === game.white_2.column) {
                     game.white_2.row = to_row;
                     game.white_2.column = to_column;
                     game.white_2.height = game.board[to_row][to_column];
+                    var white1RowColumn = document.getElementById("box_".concat(String(game.white_1.row), String(game.white_1.column)));
                     if (game.checkAOrB(game.white_1.row, game.white_1.column)) {
-                        document.getElementById("box_".concat(String(game.white_1.row), String(game.white_1.column))).className = "boxAInvalid";
+                        white1RowColumn.className = "boxAInvalid";
                     }
                     else {
-                        document.getElementById("box_".concat(String(game.white_1.row), String(game.white_1.column))).className = "boxBInvalid";
+                        white1RowColumn.className = "boxBInvalid";
                     }
                 }
                 else {
@@ -131,7 +141,8 @@ function squareClick(row_pick, column_pick) {
             var boxDiv = document.getElementById("box_".concat(String(row_pick), String(column_pick)));
             buildDiv.innerHTML = String(game.board[row_pick][column_pick]);
             validBuilds.forEach(function (element) {
-                document.getElementById("box_".concat(String(element[0]), String(element[1]))).className = element[2];
+                var element01 = document.getElementById("box_".concat(String(element[0]), String(element[1])));
+                element01.className = element[2];
             });
             clearError();
             // Check for victory by condition builder on height 3
@@ -168,19 +179,25 @@ function squareClick(row_pick, column_pick) {
             var divBuildClass = ((row_pick + column_pick) % 2 === 0) ? 'boxA' : 'boxB';
             game.record.push([from_row, from_column, to_row, to_column, row_pick, column_pick, game.black_turn, divMoveFromClass, divMoveToClass, divBuildClass]);
             // Reset the last one
-            var lastMove = game.record.length - 2;
+            var lastMove = game.record.length - 1;
             var moveArray = game.record[lastMove];
+            var moveArr01 = document.getElementById('box_'.concat(String(moveArray[0]), String(moveArray[1])));
+            var moveArr23 = document.getElementById('box_'.concat(String(moveArray[2]), String(moveArray[3])));
+            var moveArr45 = document.getElementById('box_'.concat(String(moveArray[4]), String(moveArray[5])));
             if (lastMove > -1) {
-                document.getElementById('box_'.concat(String(moveArray[0]), String(moveArray[1]))).className = moveArray[7];
-                document.getElementById('box_'.concat(String(moveArray[2]), String(moveArray[3]))).className = moveArray[8];
+                moveArr01.className = moveArray[7];
+                moveArr23.className = moveArray[8];
                 if (game.board[moveArray[4]][moveArray[5]] !== 4) {
-                    document.getElementById('box_'.concat(String(moveArray[4]), String(moveArray[5]))).className = moveArray[9];
+                    moveArr45.className = moveArray[9];
                 }
             }
             // Mark the recent move
-            document.getElementById("box_".concat(String(from_row), String(from_column))).className = 'recentMove';
-            document.getElementById("box_".concat(String(to_row), String(to_column))).className = 'recentMove';
-            document.getElementById("box_".concat(String(row_pick), String(column_pick))).className = 'recentBuild';
+            var fromRowCol = document.getElementById("box_".concat(String(from_row), String(from_column)));
+            var toRowCol = document.getElementById("box_".concat(String(to_row), String(to_column)));
+            var pickRowCol = document.getElementById("box_".concat(String(row_pick), String(column_pick)));
+            fromRowCol.className = 'recentMove';
+            toRowCol.className = 'recentMove';
+            pickRowCol.className = 'recentBuild';
             if (game.board[row_pick][column_pick] === 4) {
                 boxDiv.className = "maxHeight";
                 boxDiv.innerHTML = '';
@@ -197,6 +214,7 @@ function squareClick(row_pick, column_pick) {
             }
         }
     }
+    return true;
 }
 function printError(input) {
     console.log("False - " + input);
@@ -219,12 +237,14 @@ var GameBoard = /** @class */ (function () {
     }
     GameBoard.prototype.changePhaseOne = function (row_pick, column_pick, divBox) {
         var divMoveFromClass = (this.checkAOrB(from_row, from_column)) ? 'boxA' : 'boxB';
-        document.getElementById("box_".concat(String(from_row), String(from_column))).className = divMoveFromClass;
+        var fromRowCol = document.getElementById("box_".concat(String(from_row), String(from_column)));
+        fromRowCol.className = divMoveFromClass;
         from_row = row_pick;
         from_column = column_pick;
-        document.getElementById("box_".concat(String(from_row), String(from_column))).className = from_class;
+        fromRowCol.className = from_class;
         validMoves.forEach(function (element) {
-            document.getElementById("box_".concat(String(element[0]), String(element[1]))).className = element[2];
+            var element01 = document.getElementById("box_".concat(String(element[0]), String(element[1])));
+            element01.className = element[2];
         });
         game.turnPhaseOne(row_pick, column_pick, divBox);
     };
@@ -273,16 +293,16 @@ var GameBoard = /** @class */ (function () {
                 this.black_1.row = row;
                 this.black_1.column = col;
                 this.black_1.height = 0;
-                divPiece.innerHTML += "<img src=\"./my-app/blackPawn.png\" height=50px />";
+                divPiece.innerHTML += "<img src=\"./images/blackPawn.png\" height=50px />";
                 clearError();
             }
             else {
                 this.black_2.row = row;
                 this.black_2.column = col;
                 this.black_2.height = 0;
-                divPiece.innerHTML += "<img src=\"./my-app/blackPawn.png\" height=50px />";
+                divPiece.innerHTML += "<img src=\"./images/blackPawn.png\" height=50px />";
                 this.changeTurn();
-                document.getElementById("step").innerHTML = step[1];
+                document.getElementById('step').innerHTML = step[1];
                 clearError();
             }
         }
@@ -291,7 +311,7 @@ var GameBoard = /** @class */ (function () {
                 this.white_1.row = row;
                 this.white_1.column = col;
                 this.white_1.height = 0;
-                divPiece.innerHTML += "<img src=\"./my-app/whitePawn.png\" height=50px />";
+                divPiece.innerHTML += "<img src=\"./images/whitePawn.png\" height=50px />";
                 clearError();
             }
             else {
@@ -300,8 +320,8 @@ var GameBoard = /** @class */ (function () {
                 this.white_2.height = 0;
                 this.changeTurn();
                 this.turnPhase += 1;
-                divPiece.innerHTML += "<img src=\"./my-app/whitePawn.png\" height=50px />";
-                document.getElementById("step").innerHTML = step[2];
+                divPiece.innerHTML += "<img src=\"./images/whitePawn.png\" height=50px />";
+                document.getElementById('step').innerHTML = step[2];
                 clearError();
                 // This is the second placement for white, so now we must prep the board for black.
                 game.setupPlayerMove();
@@ -330,35 +350,36 @@ var GameBoard = /** @class */ (function () {
                 }
             }
         }
-        console.log(game.black_turn);
+        var black1RowColumn = document.getElementById("box_".concat(String(game.black_1.row), String(game.black_1.column)));
+        var black2RowColumn = document.getElementById("box_".concat(String(game.black_2.row), String(game.black_2.column)));
+        var white1RowColumn = document.getElementById("box_".concat(String(game.white_1.row), String(game.white_1.column)));
+        var white2RowColumn = document.getElementById("box_".concat(String(game.white_2.row), String(game.white_2.column)));
         if (game.black_turn) {
-            console.log('Black turn');
             if (game.checkAOrB(game.black_1.row, game.black_1.column)) {
-                document.getElementById("box_".concat(String(game.black_1.row), String(game.black_1.column))).className = "boxA";
+                black1RowColumn.className = "boxA";
             }
             else {
-                document.getElementById("box_".concat(String(game.black_1.row), String(game.black_1.column))).className = "boxB";
+                black1RowColumn.className = "boxB";
             }
             if (game.checkAOrB(game.black_2.row, game.black_2.column)) {
-                document.getElementById("box_".concat(String(game.black_2.row), String(game.black_2.column))).className = "boxA";
+                black2RowColumn.className = "boxA";
             }
             else {
-                document.getElementById("box_".concat(String(game.black_2.row), String(game.black_2.column))).className = "boxB";
+                black2RowColumn.className = "boxB";
             }
         }
         else if (!game.black_turn) {
-            console.log('White turn');
             if (game.checkAOrB(game.white_1.row, game.white_1.column)) {
-                document.getElementById("box_".concat(String(game.white_1.row), String(game.white_1.column))).className = "boxA";
+                white1RowColumn.className = "boxA";
             }
             else {
-                document.getElementById("box_".concat(String(game.white_1.row), String(game.white_1.column))).className = "boxB";
+                white1RowColumn.className = "boxB";
             }
             if (game.checkAOrB(game.white_2.row, game.white_2.column)) {
-                document.getElementById("box_".concat(String(game.white_2.row), String(game.white_2.column))).className = "boxA";
+                white2RowColumn.className = "boxA";
             }
             else {
-                document.getElementById("box_".concat(String(game.white_2.row), String(game.white_2.column))).className = "boxB";
+                white2RowColumn.className = "boxB";
             }
         }
     };
@@ -672,7 +693,7 @@ function reset() {
         game.white_2.height = 99;
         game.black_turn = true;
         game.turnPhase = 0;
-        document.getElementById("step").innerHTML = step[0];
+        document.getElementById('step').innerHTML = step[0];
         clearError();
         game.record.length = 0;
         for (var i = 0; i < 5; i++) {
