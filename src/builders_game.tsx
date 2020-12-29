@@ -180,7 +180,13 @@ function squareClick(row_pick: number, column_pick: number) {
             game.record.push([from_row, from_column, to_row, to_column, row_pick, column_pick, game.black_turn, divMoveFromClass, divMoveToClass, divBuildClass]);
 
             // Reset the last one
-            const lastMove: number = game.record.length - 1;
+            let lastMove: number;
+            if (game.record.length === 1) {
+                lastMove = 0;
+            } else {
+                lastMove = game.record.length - 2;
+            }
+
             const moveArray: any[] = game.record[lastMove];
             const moveArr01: any = document.getElementById('box_'.concat(String(moveArray[0]), String(moveArray[1])));
             const moveArr23: any = document.getElementById('box_'.concat(String(moveArray[2]), String(moveArray[3])));

@@ -179,7 +179,13 @@ function squareClick(row_pick, column_pick) {
             var divBuildClass = ((row_pick + column_pick) % 2 === 0) ? 'boxA' : 'boxB';
             game.record.push([from_row, from_column, to_row, to_column, row_pick, column_pick, game.black_turn, divMoveFromClass, divMoveToClass, divBuildClass]);
             // Reset the last one
-            var lastMove = game.record.length - 1;
+            var lastMove = void 0;
+            if (game.record.length === 1) {
+                lastMove = 0;
+            }
+            else {
+                lastMove = game.record.length - 2;
+            }
             var moveArray = game.record[lastMove];
             var moveArr01 = document.getElementById('box_'.concat(String(moveArray[0]), String(moveArray[1])));
             var moveArr23 = document.getElementById('box_'.concat(String(moveArray[2]), String(moveArray[3])));
