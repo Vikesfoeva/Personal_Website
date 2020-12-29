@@ -8,8 +8,8 @@
   },
   "hosting": {
     "public": [
-      "public",
-      "src"
+      "/public",
+      "/src"
     ],
     "ignore": [
       "firebase.json",
